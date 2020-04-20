@@ -1,0 +1,35 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "fragile",
+      "type": "node",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceRoot}/bin/fragile.js",
+      "args": ["${input:command}", "${input:options}"],
+      "outFiles": ["${workspaceFolder}/build/**/*.js"],
+      "skipFiles": ["./node_modules/**/*.js"]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "command",
+      "type": "pickString",
+      "default": "",
+      "description": "What command would you like to debug?",
+      "options": ["demo/fragile.conf.ts", "init", "samples"]
+    },
+    {
+      "id": "options",
+      "type": "pickString",
+      "default": "",
+      "description": "Any additional arguments?",
+      "options": [""]
+    }
+  ]
+}

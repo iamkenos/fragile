@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "declaration": true,
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "lib": ["es2019"],
+    "outDir": "build",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "paths": { "@iamkenos/fragile": ["build/index"] },
+    "removeComments": false,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "target": "ES5",
+    "types": ["node", "@types/jest"]
+  },
+  "include": ["./src/**/*.ts", "./src/**/*.d.ts"],
+  "exclude": ["node_modules", "build", "test", "bin", "src/cli/resources/samples"]
+}

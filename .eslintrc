@@ -1,0 +1,76 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "plugins": [],
+  "env": {
+    "node": true
+  },
+  "extends": ["standard", "plugin:@typescript-eslint/recommended"],
+  "rules": {
+    "@typescript-eslint/interface-name-prefix": ["off"],
+    "@typescript-eslint/ban-ts-comment": ["off"],
+    "@typescript-eslint/ban-types": ["off"],
+    "@typescript-eslint/explicit-module-boundary-types": ["off"],
+    "@typescript-eslint/no-explicit-any": ["off"],
+    "@typescript-eslint/no-var-requires": ["off"],
+    "@typescript-eslint/no-use-before-define": ["off"],
+    "indent": [
+      "error",
+      2,
+      {
+        "SwitchCase": 1,
+        "VariableDeclarator": 1,
+        "outerIIFEBody": 1,
+        "MemberExpression": 1,
+        "FunctionDeclaration": { "parameters": "first" },
+        "FunctionExpression": { "parameters": "first" },
+        "CallExpression": { "arguments": "first" },
+        "ArrayExpression": "first",
+        "ObjectExpression": "first",
+        "ImportDeclaration": "first",
+        "flatTernaryExpressions": false,
+        "ignoreComments": false
+      }
+    ],
+    "max-len": [
+      "error",
+      {
+        "code": 120,
+        "ignoreComments": true,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true,
+        "ignoreRegExpLiterals": true
+      }
+    ],
+    "no-empty-pattern": ["off"],
+    "no-eval": ["off"],
+    "no-extra-semi": ["error"],
+    "no-multi-spaces": ["error", { "ignoreEOLComments": true }],
+    "no-use-before-define": ["off"],
+    "prefer-rest-params": ["off"],
+    "quotes": ["error", "double"],
+    "semi": ["error", "always"],
+    "sort-imports": ["error", { "ignoreCase": true, "ignoreDeclarationSort": true }],
+    "space-before-function-paren": ["error", "never"]
+  },
+  "overrides": [
+    {
+      "files": ["src/types/**/*.d.ts"],
+      "rules": {
+        "no-useless-constructor": ["off"],
+        "@typescript-eslint/no-useless-constructor": ["off"],
+        "@typescript-eslint/prefer-namespace-keyword": ["off"]
+      }
+    },
+    {
+      "files": ["test/**/*.spec.ts"],
+      "rules": {
+        "no-undef": ["off"],
+        "@typescript-eslint/no-empty-function": ["off"]
+      }
+    }
+  ]
+}

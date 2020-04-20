@@ -1,0 +1,14 @@
+*.log
+*.tgz
+*.err
+.env
+
+wdio.conf.js
+src/cli/resources/samples/.reports
+src/cli/resources/samples/.comparable
+demo/test/.reports
+demo/test/.comparable/**/actual
+demo/test/.comparable/**/diff
+test/.coverage
+build
+node_modules

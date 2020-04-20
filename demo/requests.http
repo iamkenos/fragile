@@ -1,0 +1,43 @@
+###
+GET http://localhost:1080/foo
+
+###
+POST http://localhost:1080/foo
+content-type: application/json
+
+{
+  "data": {
+    "type": "JSON",
+    "meta": {}
+  }
+}
+
+###
+POST http://localhost:1080/foo
+content-type: application/xml
+
+<data>
+  <type>JSON</type>
+  <meta>
+    <bar>bar-val</bar>
+    <baz>
+      <qux>69</qux>
+      <qux>96</qux>
+    </baz>
+  </meta>
+</data>
+
+###
+POST http://localhost:1080/foo
+content-type: application/xml
+
+<data>
+  <type>XML</type>
+  <meta>
+    <bar>bar-val</bar>
+    <baz>
+      <qux>69</qux>
+      <qux>96</qux>
+    </baz>
+  </meta>
+</data>
