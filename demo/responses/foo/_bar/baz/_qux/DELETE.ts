@@ -1,10 +1,10 @@
 import { IResponseModule } from "@iamkenos/fragile";
 
-const fn: IResponseModule = () => {
+const fn: IResponseModule = ({ fallback }) => {
   return {
     response: {
-      status: 200,
-      body: {}
+      status: 202,
+      body: fallback.wildcards
     }
   };
 };

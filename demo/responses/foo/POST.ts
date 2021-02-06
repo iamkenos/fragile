@@ -1,4 +1,4 @@
-import { IResponseModule } from "../../../build";
+import { IResponseModule } from "@iamkenos/fragile";
 import xml2js from "xml2js";
 
 const fn: IResponseModule = ({ req }) => {

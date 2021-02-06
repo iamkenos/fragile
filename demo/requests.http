@@ -1,4 +1,7 @@
 ###
+GET http://localhost:1080
+
+###
 GET http://localhost:1080/foo
 
 ###
@@ -41,3 +44,6 @@ content-type: application/xml
     </baz>
   </meta>
 </data>
+
+###
+DELETE http://localhost:1080/foo/my.email@company.com/baz/wild card2

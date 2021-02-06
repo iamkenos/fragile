@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
+import UrlPattern from "url-pattern";
+
 import { IConfig } from "../../cli/interfaces";
+
 export interface IResponseConfigOverrides {
   rate?: IConfig["rate"];
   delay?: IConfig["delay"];
@@ -15,7 +18,7 @@ export interface IResponse {
 export interface IResponseModuleArgs {
   req?: Request;
   res?: Response;
-  wildcards?: any;
+  fallback?: IResponseModuleFallbackDetails;
 }
 
 export interface IResponseModuleReturn {
@@ -25,4 +28,9 @@ export interface IResponseModuleReturn {
 
 export interface IResponseModule {
   ({}: IResponseModuleArgs): IResponseModuleReturn
+}
+
+export interface IResponseModuleFallbackDetails {
+  urlPattern: UrlPattern;
+  wildcards: any;
 }

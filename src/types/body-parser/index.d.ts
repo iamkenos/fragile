@@ -132,5 +132,9 @@ declare module "body-parser" {
    */
   function urlencoded(options?: OptionsUrlencoded): NextHandleFunction;
 
+  /**
+   * Adds XML parsing to the body-parser library, so you can convert incoming XML data into a JSON representation.
+   * This is really useful if you want to deal with plain old JavaScript objects, but you need to interface with XML APIs.
+   */
   function xml(options?: OptonsXML): NextHandleFunction;
 }

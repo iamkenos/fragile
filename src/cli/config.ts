@@ -8,9 +8,10 @@ export const DEFAULT: IConfig = {
   delay: 0,
   etag: false,
   logLevel: DEFAULT_LEVEL,
+  rate: { limit: 0, status: 429 },
   responsesDir: "./responses",
   resourcesDir: "./resources",
-  urlPatternOpts: {}
+  urlPatternOpts: { segmentValueCharset: "a-zA-Z0-9-_~ %.@" }
 };
 
 export const RESOURCES_DIR = "/resources";

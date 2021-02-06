@@ -22,7 +22,7 @@
       "type": "pickString",
       "default": "",
       "description": "What command would you like to debug?",
-      "options": ["demo/fragile.conf.ts", "init", "samples"]
+      "options": ["demo/demo.conf.ts", "init", "samples"]
     },
     {
       "id": "options",

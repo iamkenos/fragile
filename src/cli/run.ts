@@ -7,6 +7,8 @@ import { CONFIG_OPTIONS } from "./config";
 import { createLocalConfig, createparsedConfig } from "./commands/init";
 import { generateSamples } from "./commands/samples";
 import { inspect } from "./utils";
+require("@babel/register")();
+require("tsconfig-paths/register");
 require("ts-node/register");
 
 export default (args: Arguments<any>): any => {

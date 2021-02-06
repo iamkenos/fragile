@@ -3,6 +3,7 @@ import * as prettier from "prettier";
 import * as fs from "fs-extra";
 import * as inquirer from "inquirer";
 import * as path from "path";
+import merge from "lodash.merge";
 
 import logger from "../../logger";
 import { LEVELS } from "../../logger/config";
@@ -60,7 +61,7 @@ export function createparsedConfig(sourceFile: string, overrides: any): IConfig 
   try {
     const configFile = path.join(process.cwd(), sourceFile);
     const configDir = path.dirname(configFile);
-    const config: IConfig = { ...DEFAULT, ...require(configFile).default, ...overrides };
+    const config: IConfig = merge({}, DEFAULT, require(configFile).default, overrides);
 
     // soft check for logLevel
     if (!LEVELS.includes((config.logLevel as string))) {

@@ -1,5 +1,6 @@
 import { LogLevelDesc } from "loglevel";
 import { ChoiceCollection, Question, QuestionMap } from "inquirer";
+import { UrlPatternOptions } from "url-pattern";
 import { Options } from "yargs";
 
 interface IOverrideOption {
@@ -35,5 +36,5 @@ export interface IConfig {
   rate?: { status?: number, limit?: number }
   responsesDir?: string;
   resourcesDir?: string;
-  urlPatternOpts?: {};
+  urlPatternOpts?: UrlPatternOptions;
 }
