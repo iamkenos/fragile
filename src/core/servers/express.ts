@@ -44,7 +44,7 @@ export class ExpressServer {
     // enable static files
     ExpressServer.server.use(express.static(resourcesDir));
     // enable request per second limit
-    ExpressServer.server.use(limit({ windowMs: 1000, max: rate.limit, statusCode: rate.status }));
+    // ExpressServer.server.use(limit({ windowMs: 1000, max: rate.limit, statusCode: rate.status }));
   }
 
   public static getServer(config: IConfig): Express {
