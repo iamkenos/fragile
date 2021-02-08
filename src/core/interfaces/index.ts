@@ -3,34 +3,35 @@ import UrlPattern from "url-pattern";
 
 import { IConfig } from "../../cli/interfaces";
 
-export interface IResponseConfigOverrides {
+export interface IModuleOverrides {
+  proxy?: IConfig["proxy"];
   rate?: IConfig["rate"];
   delay?: IConfig["delay"];
 }
 
-export interface IResponse {
+export interface IModuleResponse {
   status: number;
   headers?: { [key: string]: any };
   cookies?: { [key: string]: any };
   body: any;
 }
 
-export interface IResponseModuleArgs {
+export interface IModuleArgs {
   req?: Request;
-  res?: Response;
-  fallback?: IResponseModuleFallbackDetails;
+  res?: Response & Partial<IModuleMeta>;
 }
 
-export interface IResponseModuleReturn {
-  overrides?: IResponseConfigOverrides;
-  response: IResponse
+export interface IModuleReturn {
+  moduleOverrides?: IModuleOverrides;
+  moduleResponse: IModuleResponse
+}
+
+export interface IModuleMeta extends IModuleReturn {
+  moduleFullPath: string;
+  modulePath: string;
+  moduleFallback?: { urlPattern: UrlPattern; wildcards: any; };
 }
 
 export interface IResponseModule {
-  ({}: IResponseModuleArgs): IResponseModuleReturn
-}
-
-export interface IResponseModuleFallbackDetails {
-  urlPattern: UrlPattern;
-  wildcards: any;
+  ({}: IModuleArgs): IModuleReturn
 }

@@ -2,7 +2,7 @@ import { IResponseModule } from "@iamkenos/fragile";
 
 const fn: IResponseModule = () => {
   return {
-    response: {
+    moduleResponse: {
       status: 200,
       body: {}
     }

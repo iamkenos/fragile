@@ -1,11 +1,20 @@
 export class ResponseModuleNotFoundError extends Error {
   constructor(key: string) {
-    super(`Respononse module not found: ${key}`);
+    super(key);
+    this.name = "ResponseModuleNotFoundError";
+  }
+}
+
+export class ResponseModuleRequiredPropertyNotFoundError extends Error {
+  constructor(key: string, prop: string) {
+    super(`${prop} on ${key}`);
+    this.name = "ResponseModuleRequiredPropertyNotFoundError";
   }
 }
 
 export class UnsupportedFileTypeError extends Error {
   constructor(extension: string, allowed: string[]) {
     super(`File type '${extension}' isn't supported. Use any one of [${allowed}].`);
+    this.name = "UnsupportedFileTypeError";
   }
 }

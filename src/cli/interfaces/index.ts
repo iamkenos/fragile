@@ -2,6 +2,7 @@ import { LogLevelDesc } from "loglevel";
 import { ChoiceCollection, Question, QuestionMap } from "inquirer";
 import { UrlPatternOptions } from "url-pattern";
 import { Options } from "yargs";
+import { Options as ProxyOptions } from "http-proxy-middleware";
 
 interface IOverrideOption {
   alias?: Options["alias"];
@@ -34,6 +35,7 @@ export interface IConfig {
   etag?: boolean;
   logLevel?: LogLevelDesc;
   rate?: { status?: number, limit?: number }
+  proxy?: ProxyOptions;
   responsesDir?: string;
   resourcesDir?: string;
   urlPatternOpts?: UrlPatternOptions;

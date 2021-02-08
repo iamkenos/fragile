@@ -9,6 +9,7 @@ export const DEFAULT: IConfig = {
   etag: false,
   logLevel: DEFAULT_LEVEL,
   rate: { limit: 0, status: 429 },
+  proxy: { target: "", changeOrigin: true, logLevel: "silent" },
   responsesDir: "./responses",
   resourcesDir: "./resources",
   urlPatternOpts: { segmentValueCharset: "a-zA-Z0-9-_~ %.@" }
@@ -121,6 +122,10 @@ const CONFIG_PROPERTIES: IConfigProperty[] = [
       choices: LEVELS,
       default: DEFAULT.logLevel
     }
+  },
+  {
+    name: "proxy",
+    helptext: "Object specifying the http proxy options; See https://www.npmjs.com/package/http-proxy-middleware"
   },
   {
     name: "rate",

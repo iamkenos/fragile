@@ -6,6 +6,7 @@ export default (config: IConfig): void => {
   const mock = MockServer.getInstance(config);
   const express = ExpressServer.getServer(config)
     .use(mock.useRouterMiddleware)
+    .use(mock.useProxyMiddleware)
     .use(mock.useEndMiddleware);
   const http = HttpServer.getServer(express);
 

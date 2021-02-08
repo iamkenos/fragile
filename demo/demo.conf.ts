@@ -8,6 +8,7 @@ const config: IConfig = {
   etag: false,
   logLevel: "info",
   rate: { limit: 1 },
+  proxy: { target: "http://google.com" },
   responsesDir: "./responses",
   resourcesDir: "./resources",
   urlPatternOpts: { segmentValueCharset: "a-zA-Z0-9-_~ %.@" }

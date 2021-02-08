@@ -1,13 +1,15 @@
 import * as path from "path";
 import { NextFunction, Request, Response } from "express";
-import UrlPattern from "url-pattern";
+import { createProxyMiddleware as proxyRequest } from "http-proxy-middleware";
 import limit from "express-rate-limit";
+import merge from "lodash.merge";
+import UrlPattern from "url-pattern";
 
 import { IConfig } from "../../cli/interfaces";
-import { resolveFiles } from "../../cli/utils";
+import { inspect, resolveFiles } from "../../cli/utils";
 import { getDirsNested, getNearestParentDir, isModuleExisting, randIntBetween, slashify } from "../utils";
-import { ResponseModuleNotFoundError } from "../../exceptions";
-import { IResponseModule, IResponseModuleFallbackDetails, IResponseModuleReturn } from "../interfaces";
+import { ResponseModuleNotFoundError, ResponseModuleRequiredPropertyNotFoundError } from "../../exceptions";
+import { IModuleMeta, IModuleReturn, IResponseModule } from "../interfaces";
 import logger from "../../logger";
 
 export class MockServer {
@@ -19,24 +21,22 @@ export class MockServer {
     this.config = config;
     this.useRouterMiddleware = this.useRouterMiddleware.bind(this);
     this.useRateLimitMiddleware = this.useRateLimitMiddleware.bind(this);
+    this.useProxyMiddleware = this.useProxyMiddleware.bind(this);
     this.useEndMiddleware = this.useEndMiddleware.bind(this);
 
     // preload responses to reduce overhead on initial request
     resolveFiles(config.responsesDir, this.SUPPORTED_RESPONSE_TYPES, false).forEach(file => require(file));
   }
 
-  private getComputedDelay(delay: IConfig["delay"]): number {
-    return typeof delay === "number" ? delay : randIntBetween(delay.min, delay.max);
-  }
-
-  private getResponseModule(req: Request): { module: IResponseModule, fallback?: IResponseModuleFallbackDetails } {
+  private assignResponseModule(req: Request, res: Response & IModuleMeta): void {
     const { responsesDir, urlPatternOpts } = this.config;
     const module = path.join(responsesDir, req.path, req.method);
     const moduleShort = slashify(module, responsesDir);
 
     if (isModuleExisting(module)) {
       logger.info("Response: %s", moduleShort);
-      return { module: require(module).default };
+      res.moduleFullPath = module;
+      res.modulePath = moduleShort;
     } else {
       // if the expected response module isn't found, look for a fallback module
       // fallback modules are matched based on a defined wildcard pattern basically
@@ -88,54 +88,82 @@ export class MockServer {
         }
 
         logger.info("Response: %s", fallbackShort);
-        return { module: require(fallback).default, fallback: fallbackDetails(fallbackShort) };
+        res.moduleFullPath = fallback;
+        res.modulePath = fallbackShort;
+        res.moduleFallback = fallbackDetails(fallbackShort);
       } else {
         throw new ResponseModuleNotFoundError(moduleShort);
       }
     }
   }
 
-  public useRouterMiddleware(req: Request, res: Response & IResponseModuleReturn, next: NextFunction): void {
+  private execResponseModule(req: Request, res: Response & IModuleMeta): void {
+    const { delay, proxy, rate } = this.config;
+    const returned = require(res.moduleFullPath).default as IResponseModule;
+    const { moduleResponse, moduleOverrides } = returned({ req: req, res: res });
+    const computedDelay = (d: IConfig["delay"]) => typeof d === "number" ? d : randIntBetween(d.min, d.max);
+
+    if (!moduleResponse) throw new ResponseModuleRequiredPropertyNotFoundError("moduleResponse", res.modulePath);
+
+    // create `moduleResponse` and `moduleOverrides` properties on the response
+    // object so we can use these on the final handler before the cycle ends
+    res.moduleResponse = moduleResponse;
+    res.moduleOverrides = merge({}, { delay, proxy, rate }, moduleOverrides);
+    res.moduleOverrides.delay = computedDelay(res.moduleOverrides.delay);
+  }
+
+  public useRouterMiddleware(req: Request, res: Response & IModuleMeta, next: NextFunction): void {
     try {
-      const responseModule = this.getResponseModule(req);
-      const returned = responseModule.module({ req: req, res: res, fallback: responseModule.fallback });
-      const { overrides, response } = returned;
-      const computedRate = overrides?.rate || this.config.rate;
-      const computedDelay = this.getComputedDelay(overrides?.delay || this.config.delay);
-      // create `response` and `overrides` properties on the express response object
-      // this is so we can use these on the final handler before the cycle ends
-      res.response = response;
-      res.overrides = { rate: computedRate, delay: computedDelay };
+      this.assignResponseModule(req, res);
+      this.execResponseModule(req, res);
     } catch (e) {
-      logger.warn("Unable to get mock response for: %s %s", req.method, req.path);
+      if (e.name === ResponseModuleNotFoundError.name) {
+        logger.warn("Response module not found: %s", res.modulePath);
+      } else {
+        logger.error(e);
+      }
     }
     next();
   }
 
-  public useRateLimitMiddleware(req: Request, res: Response & IResponseModuleReturn, next: NextFunction): void {
-    const { response, overrides } = res;
+  public useRateLimitMiddleware(req: Request, res: Response & IModuleMeta, next: NextFunction): void {
+    const { moduleResponse, moduleOverrides } = res;
     // doesnt work:
     // https://github.com/nfriedly/express-rate-limit/issues/221
     limit({
       windowMs: 1000,
-      max: overrides?.rate.limit || this.config.rate.limit,
-      handler: (req: Request, res: Response & IResponseModuleReturn, next: NextFunction) => {
-        response.status = overrides?.rate.status || this.config.rate.status;
-        response.body = "Request per second limit has been reached";
+      max: moduleOverrides.rate.limit,
+      handler: (req: Request, res: Response & IModuleReturn, next: NextFunction) => {
+        moduleResponse.status = moduleOverrides.rate.status;
+        moduleResponse.body = "Request per second limit has been reached";
         next();
       }
     })(req, res, next);
   }
 
-  public useEndMiddleware(req: Request, res: Response & IResponseModuleReturn): void {
-    const { response, overrides } = res;
-    Object.keys(response.headers || {}).forEach(key => res.set(key, response.headers[key]));
-    Object.keys(response.cookies || {}).forEach(key => res.append("Set-Cookie", `${key}=${response.cookies[key]}`));
+  public useProxyMiddleware(req: Request, res: Response & IModuleMeta, next: NextFunction): void {
+    const { moduleOverrides, moduleResponse } = res;
 
-    setTimeout(
-      () => { return res.status(response.status).send(response.body); },
-      this.getComputedDelay(overrides?.delay || this.config.delay)
-    );
+    if (moduleResponse && moduleOverrides.proxy.target) {
+      logger.info("Forwarding request to response override target: %s", moduleOverrides.proxy.target);
+      logger.debug("Proxy options: %s", inspect(moduleOverrides.proxy));
+      proxyRequest(req.path, moduleOverrides.proxy)(req, res, next);
+    } else if (!moduleResponse && this.config.proxy.target) {
+      logger.info("Forwarding request to global target: %s", this.config.proxy.target);
+      logger.debug("Proxy options: %s", inspect(this.config.proxy));
+      proxyRequest(req.path, this.config.proxy)(req, res, next);
+    } else {
+      next();
+    }
+  }
+
+  public useEndMiddleware(req: Request, res: Response & IModuleMeta): void {
+    const { moduleResponse, moduleOverrides } = res;
+    const { headers, cookies, status, body } = moduleResponse;
+    Object.keys(headers || {}).forEach(key => res.set(key, headers[key]));
+    Object.keys(cookies || {}).forEach(key => res.cookie(key, cookies[key]));
+
+    setTimeout(() => { return res.status(status).send(body); }, +moduleOverrides.delay);
   }
 
   public static getInstance(config: IConfig): MockServer {

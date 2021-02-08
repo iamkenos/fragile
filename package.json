@@ -46,6 +46,7 @@
     "express": "4.17.1",
     "express-rate-limit": "5.2.3",
     "fs-extra": "9.0.1",
+    "http-proxy-middleware": "^1.0.6",
     "inquirer": "7.3.3",
     "lodash.merge": "^4.6.2",
     "loglevel": "1.7.0",
