@@ -8,6 +8,7 @@ const config: IConfig = {
   etag: false,
   logLevel: "warn",
   proxy: { target: "", changeOrigin: true, logLevel: "silent" },
+  rate: { limit: 1, status: 429 },
   recordResponses: false,
   recordDir: "./recordings",
   responsesDir: "./responses",

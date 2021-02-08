@@ -1,5 +1,6 @@
 ###
 GET http://localhost:1080
+
 ###
 PUT http://localhost:1080
 
@@ -49,3 +50,6 @@ content-type: application/xml
 
 ###
 DELETE http://localhost:1080/foo/my.email@company.com/baz/wild card2
+
+###
+PATCH http://localhost:1080/foo/my.email@company.com

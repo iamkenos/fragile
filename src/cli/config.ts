@@ -133,10 +133,10 @@ const CONFIG_PROPERTIES: IConfigProperty[] = [
     name: "proxy",
     helptext: "Object specifying the http proxy options; See https://www.npmjs.com/package/http-proxy-middleware"
   },
-  // {
-  //   name: "rate",
-  //   helptext: "Object having a `limit` of rps allowed and the return `status` if the limit is reached"
-  // },
+  {
+    name: "rate",
+    helptext: "Object having a `limit` of rps allowed and the return `status` if the limit is reached"
+  },
   {
     name: "recordResponses",
     helptext: "Whether to record the responses on a defined directory; Use with `recordDir`",

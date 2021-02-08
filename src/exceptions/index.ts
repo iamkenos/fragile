@@ -6,7 +6,7 @@ export class ResponseModuleNotFoundError extends Error {
 }
 
 export class ResponseModuleRequiredPropertyNotFoundError extends Error {
-  constructor(key: string, prop: string) {
+  constructor(prop: string, key: string) {
     super(`${prop} on ${key}`);
     this.name = "ResponseModuleRequiredPropertyNotFoundError";
   }

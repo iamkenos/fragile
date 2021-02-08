@@ -2,7 +2,6 @@ import bp from "body-parser";
 import bpx from "body-parser-xml";
 import crs from "cors";
 import express, { Express } from "express";
-import limit from "express-rate-limit";
 
 import { IConfig } from "../../cli/interfaces";
 import logger from "../../logger";
@@ -33,7 +32,7 @@ export class ExpressServer {
   }
 
   private loadMiddleware(): void {
-    const { resourcesDir, cors, rate } = this.config;
+    const { resourcesDir, cors } = this.config;
     // cors
     if (cors) { ExpressServer.server.use(crs()); }
     // enable json request body parsing
@@ -43,8 +42,6 @@ export class ExpressServer {
     ExpressServer.server.use(bp.xml({ xmlParseOptions: { explicitArray: false } }));
     // enable static files
     ExpressServer.server.use(express.static(resourcesDir));
-    // enable request per second limit
-    // ExpressServer.server.use(limit({ windowMs: 1000, max: rate.limit, statusCode: rate.status }));
   }
 
   public static getServer(config: IConfig): Express {

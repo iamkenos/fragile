@@ -31,6 +31,7 @@ export interface IModuleReturn {
 }
 
 export interface IModuleMeta extends IModuleReturn, IModuleTime {
+  moduleError: Error;
   moduleFullPath: string;
   modulePath: string;
   moduleFallback?: { urlPattern: UrlPattern; wildcards: any; };

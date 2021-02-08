@@ -4,7 +4,7 @@ import * as fs from "fs-extra";
 import * as path from "path";
 import { NextFunction, Request, Response } from "express";
 import { createProxyMiddleware as proxyRequest } from "http-proxy-middleware";
-import limit from "express-rate-limit";
+import limit, { RateLimit } from "express-rate-limit";
 import merge from "lodash.merge";
 import UrlPattern from "url-pattern";
 
@@ -13,7 +13,7 @@ import { inspect, readFileSync, resolveFiles } from "../../cli/utils";
 import { CLI_DIR, PRETTIER_SETTINGS_FILE, RESPONSE_MODULE_TPL_FILE } from "../../cli/config";
 import { getDirsNested, getNearestParentDir, isModuleExisting, randIntBetween, slashify } from "../utils";
 import { ResponseModuleNotFoundError, ResponseModuleRequiredPropertyNotFoundError } from "../../exceptions";
-import { ILoggedMeta, IModuleMeta, IModuleReturn, IModuleTime, IResponseModule } from "../interfaces";
+import { ILoggedMeta, IModuleMeta, IModuleTime, IResponseModule } from "../interfaces";
 import logger from "../../logger";
 
 export class MockServer {
@@ -103,8 +103,8 @@ export class MockServer {
 
   private execResponseModule(req: Request, res: Response & IModuleMeta): void {
     const { delay, proxy, rate } = this.config;
-    const returned = require(res.moduleFullPath).default as IResponseModule;
-    const { moduleResponse, moduleOverrides } = returned({ req: req, res: res });
+    const module = require(res.moduleFullPath).default as IResponseModule;
+    const { moduleResponse, moduleOverrides } = module({ req: req, res: res });
     const computedDelay = (d: IConfig["delay"]) => typeof d === "number" ? d : randIntBetween(d.min, d.max);
 
     if (!moduleResponse) throw new ResponseModuleRequiredPropertyNotFoundError("moduleResponse", res.modulePath);
@@ -116,7 +116,7 @@ export class MockServer {
     res.moduleOverrides.delay = computedDelay(res.moduleOverrides.delay);
   }
 
-  private recordResponseModule(meta: ILoggedMeta, modulePath: string): void {
+  private recordAsResponseModule(meta: ILoggedMeta, modulePath: string): void {
     try {
       const outputFile = path.join(this.config.recordDir, modulePath + ".ts");
       const fmt = readFileSync(path.join(__dirname, "../../", CLI_DIR, PRETTIER_SETTINGS_FILE));
@@ -143,28 +143,22 @@ export class MockServer {
       this.assignResponseModule(req, res);
       this.execResponseModule(req, res);
     } catch (error) {
-      if (error.name === ResponseModuleNotFoundError.name) {
-        logger.warn("Response module not found: %s", res.modulePath);
-      } else {
-        logger.error(error);
-      }
+      res.moduleError = error;
     }
     next();
   }
 
-  public useRateLimitMiddleware(req: Request, res: Response & IModuleMeta, next: NextFunction): void {
-    const { moduleResponse, moduleOverrides } = res;
-    // doesnt work:
-    // https://github.com/nfriedly/express-rate-limit/issues/221
-    limit({
-      windowMs: 1000,
-      max: moduleOverrides.rate.limit,
-      handler: (req: Request, res: Response & IModuleReturn, next: NextFunction) => {
-        moduleResponse.status = moduleOverrides.rate.status;
-        moduleResponse.body = "Request per second limit has been reached";
+  public useRateLimitMiddleware(): RateLimit {
+    const { rate } = this.config;
+    return limit({
+      windowMs: 5000,
+      max: (req: Request, res: Response & IModuleMeta) => res.moduleOverrides?.rate?.limit || rate.limit,
+      handler: (req: Request, res: Response & IModuleMeta, next: NextFunction) => {
+        res.moduleResponse.status = res.moduleOverrides?.rate?.status || rate.status;
+        res.moduleResponse.body = "Request per second limit has been reached";
         next();
       }
-    })(req, res, next);
+    });
   }
 
   public useLoggerMiddleware(
@@ -204,7 +198,7 @@ export class MockServer {
         response: { statusCode: statusCode, headers: res.getHeaders(), body: res._parsedChunk }
       };
 
-      this.config.recordResponses && this.recordResponseModule(meta, res.modulePath);
+      this.config.recordResponses && this.recordAsResponseModule(meta, res.modulePath);
       logger.debug("%s %s %sms \n%s", meta.request.method, path, res.moduleTime, JSON.stringify(meta, null, 2));
       res.end(chunk, encoding);
     };
@@ -228,7 +222,7 @@ export class MockServer {
   }
 
   public useSendMiddleware(req: Request, res: Response & IModuleMeta): void {
-    const { moduleResponse, moduleOverrides } = res;
+    const { moduleResponse, moduleOverrides, moduleError } = res;
 
     if (moduleResponse) {
       const { headers, cookies, status, body } = moduleResponse;
@@ -237,8 +231,13 @@ export class MockServer {
 
       setTimeout(() => { return res.status(status).send(body); }, +moduleOverrides.delay);
     } else {
-      const err = new ResponseModuleNotFoundError(res.modulePath);
-      res.status(404).send(`${err.name}: ${err.message}`);
+      if (moduleError.name === ResponseModuleNotFoundError.name) {
+        res.status(404);
+      } else {
+        res.status(500);
+      }
+      logger.error(moduleError);
+      res.send(`${moduleError.name}: ${moduleError.message}`);
     }
   }
 
