@@ -1,3 +1,6 @@
+import * as ejs from "ejs";
+import * as prettier from "prettier";
+import * as fs from "fs-extra";
 import * as path from "path";
 import { NextFunction, Request, Response } from "express";
 import { createProxyMiddleware as proxyRequest } from "http-proxy-middleware";
@@ -6,10 +9,11 @@ import merge from "lodash.merge";
 import UrlPattern from "url-pattern";
 
 import { IConfig } from "../../cli/interfaces";
-import { inspect, resolveFiles } from "../../cli/utils";
+import { inspect, readFileSync, resolveFiles } from "../../cli/utils";
+import { CLI_DIR, PRETTIER_SETTINGS_FILE, RESPONSE_MODULE_TPL_FILE } from "../../cli/config";
 import { getDirsNested, getNearestParentDir, isModuleExisting, randIntBetween, slashify } from "../utils";
 import { ResponseModuleNotFoundError, ResponseModuleRequiredPropertyNotFoundError } from "../../exceptions";
-import { IModuleMeta, IModuleReturn, IResponseModule } from "../interfaces";
+import { ILoggedMeta, IModuleMeta, IModuleReturn, IModuleTime, IResponseModule } from "../interfaces";
 import logger from "../../logger";
 
 export class MockServer {
@@ -22,7 +26,8 @@ export class MockServer {
     this.useRouterMiddleware = this.useRouterMiddleware.bind(this);
     this.useRateLimitMiddleware = this.useRateLimitMiddleware.bind(this);
     this.useProxyMiddleware = this.useProxyMiddleware.bind(this);
-    this.useEndMiddleware = this.useEndMiddleware.bind(this);
+    this.useLoggerMiddleware = this.useLoggerMiddleware.bind(this);
+    this.useSendMiddleware = this.useSendMiddleware.bind(this);
 
     // preload responses to reduce overhead on initial request
     resolveFiles(config.responsesDir, this.SUPPORTED_RESPONSE_TYPES, false).forEach(file => require(file));
@@ -32,12 +37,10 @@ export class MockServer {
     const { responsesDir, urlPatternOpts } = this.config;
     const module = path.join(responsesDir, req.path, req.method);
     const moduleShort = slashify(module, responsesDir);
+    res.moduleFullPath = module;
+    res.modulePath = moduleShort;
 
-    if (isModuleExisting(module)) {
-      logger.info("Response: %s", moduleShort);
-      res.moduleFullPath = module;
-      res.modulePath = moduleShort;
-    } else {
+    if (!isModuleExisting(module)) {
       // if the expected response module isn't found, look for a fallback module
       // fallback modules are matched based on a defined wildcard pattern basically
       // to handle requests with dynamic path paremeters e.g. /api/foo/1 to /api/foo/100
@@ -87,7 +90,6 @@ export class MockServer {
           logger.warn("Defaulting to first match: %s", fallbackShort);
         }
 
-        logger.info("Response: %s", fallbackShort);
         res.moduleFullPath = fallback;
         res.modulePath = fallbackShort;
         res.moduleFallback = fallbackDetails(fallbackShort);
@@ -95,6 +97,8 @@ export class MockServer {
         throw new ResponseModuleNotFoundError(moduleShort);
       }
     }
+
+    logger.info("Response: %s", res.modulePath);
   }
 
   private execResponseModule(req: Request, res: Response & IModuleMeta): void {
@@ -112,15 +116,37 @@ export class MockServer {
     res.moduleOverrides.delay = computedDelay(res.moduleOverrides.delay);
   }
 
+  private recordResponseModule(meta: ILoggedMeta, modulePath: string): void {
+    try {
+      const outputFile = path.join(this.config.recordDir, modulePath + ".ts");
+      const fmt = readFileSync(path.join(__dirname, "../../", CLI_DIR, PRETTIER_SETTINGS_FILE));
+      const renderedFmt = { ...JSON.parse(fmt), parser: "babel" };
+
+      const tpl = readFileSync(path.join(__dirname, "../../", CLI_DIR, RESPONSE_MODULE_TPL_FILE));
+      const renderedTpl = ejs.render(tpl, { meta: meta.response });
+
+      if (fs.existsSync(outputFile)) {
+        logger.debug("Deleting existing file %s", outputFile);
+        fs.unlinkSync(outputFile);
+      }
+
+      logger.debug("Writing to file %s", outputFile);
+      fs.outputFileSync(outputFile, prettier.format(renderedTpl, renderedFmt));
+    } catch (error) {
+      logger.error(error);
+    }
+  }
+
   public useRouterMiddleware(req: Request, res: Response & IModuleMeta, next: NextFunction): void {
     try {
+      logger.info("Request: %s %s", req.method, req.path);
       this.assignResponseModule(req, res);
       this.execResponseModule(req, res);
-    } catch (e) {
-      if (e.name === ResponseModuleNotFoundError.name) {
+    } catch (error) {
+      if (error.name === ResponseModuleNotFoundError.name) {
         logger.warn("Response module not found: %s", res.modulePath);
       } else {
-        logger.error(e);
+        logger.error(error);
       }
     }
     next();
@@ -141,6 +167,50 @@ export class MockServer {
     })(req, res, next);
   }
 
+  public useLoggerMiddleware(
+    req: Request & IModuleTime,
+    res: Response & IModuleMeta & { _parsedChunk: string },
+    next: NextFunction): void {
+    req.moduleTime = +new Date();
+    res._parsedChunk = "";
+    const end = res.end;
+    const jsonParse = (str: string) => {
+      try {
+        return JSON.parse(str);
+      } catch (error) {
+        return undefined;
+      }
+    };
+    const chunkParse = (chunk: string, isjson: boolean) => {
+      const chunkStr = chunk && chunk.toString();
+      if (isjson) return (jsonParse(chunk) || chunkStr); else return chunkStr;
+    };
+
+    // @ts-ignore
+    res.end = (chunk: any, encoding: BufferEncoding) => {
+      res.end = end;
+      res.moduleTime = +new Date() - req.moduleTime;
+
+      const { headers, method, path, query, body } = req;
+      const { statusCode } = res;
+
+      if (chunk) {
+        const isJson = ((res.getHeader("content-type") as string)?.indexOf("json") >= 0);
+        res._parsedChunk = chunkParse(chunk.toString(), isJson);
+      }
+
+      const meta: ILoggedMeta = {
+        request: { headers: headers, method: method, path: path, query: query, body: body },
+        response: { statusCode: statusCode, headers: res.getHeaders(), body: res._parsedChunk }
+      };
+
+      this.config.recordResponses && this.recordResponseModule(meta, res.modulePath);
+      logger.debug("%s %s %sms \n%s", meta.request.method, path, res.moduleTime, JSON.stringify(meta, null, 2));
+      res.end(chunk, encoding);
+    };
+    next();
+  }
+
   public useProxyMiddleware(req: Request, res: Response & IModuleMeta, next: NextFunction): void {
     const { moduleOverrides, moduleResponse } = res;
 
@@ -157,13 +227,19 @@ export class MockServer {
     }
   }
 
-  public useEndMiddleware(req: Request, res: Response & IModuleMeta): void {
+  public useSendMiddleware(req: Request, res: Response & IModuleMeta): void {
     const { moduleResponse, moduleOverrides } = res;
-    const { headers, cookies, status, body } = moduleResponse;
-    Object.keys(headers || {}).forEach(key => res.set(key, headers[key]));
-    Object.keys(cookies || {}).forEach(key => res.cookie(key, cookies[key]));
 
-    setTimeout(() => { return res.status(status).send(body); }, +moduleOverrides.delay);
+    if (moduleResponse) {
+      const { headers, cookies, status, body } = moduleResponse;
+      Object.keys(headers || {}).forEach(key => res.set(key, headers[key]));
+      Object.keys(cookies || {}).forEach(key => res.cookie(key, cookies[key]));
+
+      setTimeout(() => { return res.status(status).send(body); }, +moduleOverrides.delay);
+    } else {
+      const err = new ResponseModuleNotFoundError(res.modulePath);
+      res.status(404).send(`${err.name}: ${err.message}`);
+    }
   }
 
   public static getInstance(config: IConfig): MockServer {

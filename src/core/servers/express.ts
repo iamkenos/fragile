@@ -5,7 +5,7 @@ import express, { Express } from "express";
 import limit from "express-rate-limit";
 
 import { IConfig } from "../../cli/interfaces";
-import logger, { ExpressLog } from "../../logger";
+import logger from "../../logger";
 
 export class ExpressServer {
   private static instance: ExpressServer;
@@ -36,8 +36,6 @@ export class ExpressServer {
     const { resourcesDir, cors, rate } = this.config;
     // cors
     if (cors) { ExpressServer.server.use(crs()); }
-    // request / response logging
-    ExpressServer.server.use(ExpressLog.getLogger().useLoggerMiddleware);
     // enable json request body parsing
     ExpressServer.server.use(bp.json());
     ExpressServer.server.use(bp.urlencoded({ extended: true }));

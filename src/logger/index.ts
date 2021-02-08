@@ -1,7 +1,6 @@
 import chalk from "chalk";
 import loglevel from "loglevel";
 import prefix from "loglevel-plugin-prefix";
-import { NextFunction, Request, Response } from "express";
 
 import Stack from "./stack";
 import { DEFAULT_LEVEL, DEFAULT_LOG_COLORS, DEFAULT_NAME, LEVELS } from "./config";
@@ -70,64 +69,6 @@ class Log {
   public trace(message: any, ...args: any[]): void {
     const prefix = this.logger.getLevel() === 0 ? `${this.getCallerFile()} ` : "";
     this.logger.trace(`${prefix}${message}`, ...args);
-  }
-}
-
-export class ExpressLog {
-  private static instance: ExpressLog;
-  private logger: loglevel.Logger;
-
-  private constructor() {
-    this.logger = Log.getLogger().logger;
-    this.useLoggerMiddleware = this.useLoggerMiddleware.bind(this);
-  }
-
-  public static getLogger(): ExpressLog {
-    if (!ExpressLog.instance) ExpressLog.instance = new ExpressLog();
-    return ExpressLog.instance;
-  }
-
-  public useLoggerMiddleware(
-    req: Request & { time: number },
-    res: Response & { time: number, body: string },
-    next: NextFunction): void {
-    req.time = +new Date();
-    const end = res.end;
-
-    const jsonParse = (str: string) => {
-      try {
-        return JSON.parse(str);
-      } catch (e) {
-        return undefined;
-      }
-    };
-
-    const chunkParse = (chunk: string, isjson: boolean) => {
-      const chunkStr = chunk && chunk.toString();
-      if (isjson) return (jsonParse(chunk) || chunkStr); else return chunkStr;
-    };
-
-    // @ts-ignore
-    res.end = (chunk: any, encoding: BufferEncoding) => {
-      res.time = +new Date() - req.time;
-      res.end = end;
-      res.end(chunk, encoding);
-
-      if (chunk) {
-        const isJson = ((res.getHeader("content-type") as string)?.indexOf("json") >= 0);
-        const body = chunk.toString();
-        res.body = chunkParse(body, isJson);
-      }
-
-      const meta = JSON.stringify({
-        request: { headers: req.headers, method: req.method, path: req.url, qs: req.query, body: req.body },
-        response: { headers: res.getHeaders(), status: res.statusCode, body: res.body }
-      }, null, 2);
-
-      this.logger.getLevel() >= 2 && this.logger.info("%s %s %s %sms", req.method, res.statusCode, req.url, res.time);
-      this.logger.debug("%s %s %s %sms \n%s", req.method, res.statusCode, req.url, res.time, meta);
-    };
-    next();
   }
 }
 

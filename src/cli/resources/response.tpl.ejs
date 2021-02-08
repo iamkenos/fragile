@@ -2,12 +2,10 @@ import { IResponseModule } from "@iamkenos/fragile";
 
 const fn: IResponseModule = () => {
   return {
-    moduleOverrides: {
-      proxy: { target: "http://google.com.sg" }
-    },
     moduleResponse: {
-      status: 222,
-      body: "hello world!"
+      status: <%= meta.statusCode %>,
+      headers: <%- JSON.stringify(meta.headers) %>,
+      body: <%- JSON.stringify(meta.body) %>
     }
   };
 };

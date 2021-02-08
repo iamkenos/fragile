@@ -24,6 +24,7 @@
     "postbuild:cp:types": "mkdir -p build/types && shx cp -R ./src/types build/types",
     "postbuild:cp:resources": "shx cp -R ./src/cli/resources build/cli",
     "postbuild:cp:prettierrc": "shx cp ./.prettierrc build/cli/resources",
+    "postbuild:mv:tsconfig": "shx mv ./build/cli/resources/tsconfig.tpl.ejs ./build/cli/resources/tsconfig.json",
     "demo:serve": "./bin/fragile.js demo/demo.conf.ts",
     "pack": "npm run build && rimraf *fragile-*.tgz && npm pack",
     "lint": "eslint ./",
@@ -62,6 +63,7 @@
   "devDependencies": {
     "@types/body-parser-xml": "1.1.0",
     "@types/cors": "2.8.9",
+    "@types/ejs": "^3.0.5",
     "@types/eslint": "7.2.6",
     "@types/fs-extra": "9.0.6",
     "@types/glob": "7.1.3",

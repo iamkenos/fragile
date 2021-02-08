@@ -8,14 +8,20 @@ export const DEFAULT: IConfig = {
   delay: 0,
   etag: false,
   logLevel: DEFAULT_LEVEL,
-  rate: { limit: 0, status: 429 },
   proxy: { target: "", changeOrigin: true, logLevel: "silent" },
+  rate: { limit: 0, status: 429 },
+  recordResponses: false,
+  recordDir: "./recordings",
   responsesDir: "./responses",
   resourcesDir: "./resources",
   urlPatternOpts: { segmentValueCharset: "a-zA-Z0-9-_~ %.@" }
 };
 
+export const CLI_DIR = "/cli";
+
 export const RESOURCES_DIR = "/resources";
+
+export const RESPONSE_MODULE_TPL_FILE = RESOURCES_DIR + "/response.tpl.ejs";
 
 export const PRETTIER_SETTINGS_FILE = RESOURCES_DIR + "/.prettierrc";
 
@@ -130,6 +136,24 @@ const CONFIG_PROPERTIES: IConfigProperty[] = [
   {
     name: "rate",
     helptext: "Object having a `limit` of rps allowed and the return `status` if the limit is reached"
+  },
+  {
+    name: "rate",
+    helptext: "Object having a `limit` of rps allowed and the return `status` if the limit is reached"
+  },
+  {
+    name: "recordResponses",
+    helptext: "Whether to record the responses on a defined directory; Use with `recordDir`",
+    overrideOption: {
+      enabled: true,
+      alias: "rr",
+      type: "boolean",
+      description: "Record api responses in the expected response module format"
+    }
+  },
+  {
+    name: "recordDir",
+    helptext: "Base directory of the response data recordings, relative to the config file; Use with `recordResponses`"
   },
   {
     name: "responsesDir",

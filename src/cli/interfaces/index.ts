@@ -36,6 +36,8 @@ export interface IConfig {
   logLevel?: LogLevelDesc;
   rate?: { status?: number, limit?: number }
   proxy?: ProxyOptions;
+  recordResponses?: boolean;
+  recordDir?: string;
   responsesDir?: string;
   resourcesDir?: string;
   urlPatternOpts?: UrlPatternOptions;

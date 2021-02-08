@@ -6,9 +6,9 @@ const config: IConfig = {
   cors: true,
   delay: 0,
   etag: false,
-  logLevel: "info",
+  logLevel: "debug",
   rate: { limit: 1 },
-  proxy: { target: "http://google.com" },
+  recordResponses: true,
   responsesDir: "./responses",
   resourcesDir: "./resources",
   urlPatternOpts: { segmentValueCharset: "a-zA-Z0-9-_~ %.@" }
