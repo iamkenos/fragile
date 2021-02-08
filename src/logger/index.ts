@@ -48,23 +48,28 @@ class Log {
   }
 
   public error(message: any, ...args: any[]): void {
-    this.logger.error(`${this.getCallerFile()} ${message}`, ...args);
+    const prefix = this.logger.getLevel() === 0 ? `${this.getCallerFile()} ` : "";
+    this.logger.error(`${prefix}${message}`, ...args);
   }
 
   public warn(message: any, ...args: any[]): void {
-    this.logger.warn(`${this.getCallerFile()} ${message}`, ...args);
+    const prefix = this.logger.getLevel() === 0 ? `${this.getCallerFile()} ` : "";
+    this.logger.warn(`${prefix}${message}`, ...args);
   }
 
   public info(message: any, ...args: any[]): void {
-    this.logger.info(`${this.getCallerFile()} ${message}`, ...args);
+    const prefix = this.logger.getLevel() === 0 ? `${this.getCallerFile()} ` : "";
+    this.logger.info(`${prefix}${message}`, ...args);
   }
 
   public debug(message: any, ...args: any[]): void {
-    this.logger.debug(`${this.getCallerFile()} ${message}`, ...args);
+    const prefix = this.logger.getLevel() === 0 ? `${this.getCallerFile()} ` : "";
+    this.logger.debug(`${prefix}${message}`, ...args);
   }
 
   public trace(message: any, ...args: any[]): void {
-    this.logger.trace(`${this.getCallerFile()} ${message}`, ...args);
+    const prefix = this.logger.getLevel() === 0 ? `${this.getCallerFile()} ` : "";
+    this.logger.trace(`${prefix}${message}`, ...args);
   }
 }
 
