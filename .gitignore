@@ -4,6 +4,7 @@
 .env
 
 recordings
+certs
 test/.coverage
 build
 node_modules

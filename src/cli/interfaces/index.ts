@@ -30,6 +30,7 @@ export interface IConfigProperty {
 export interface IConfig {
   host?: string;
   port?: number;
+  certsDir?: string;
   cors?: boolean;
   delay?: number | { min: number, max: number }
   etag?: boolean;

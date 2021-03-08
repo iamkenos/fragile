@@ -151,11 +151,16 @@ export class MockServer {
   public useRateLimitMiddleware(): RateLimit {
     const { rate } = this.config;
     return limit({
-      windowMs: 5000,
+      windowMs: 1000,
       max: (req: Request, res: Response & IModuleMeta) => res.moduleOverrides?.rate?.limit || rate.limit,
       handler: (req: Request, res: Response & IModuleMeta, next: NextFunction) => {
-        res.moduleResponse.status = res.moduleOverrides?.rate?.status || rate.status;
-        res.moduleResponse.body = "Request per second limit has been reached";
+        const { moduleResponse, moduleOverrides } = res;
+        if (moduleResponse) {
+          moduleResponse.status = moduleOverrides?.rate?.status || rate.status;
+          moduleResponse.body = "Request per second limit has been reached";
+        } else {
+          res.removeHeader("Retry-After");
+        }
         next();
       }
     });

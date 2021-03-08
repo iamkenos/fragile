@@ -1,7 +1,12 @@
 import { Request, Response } from "express";
 import UrlPattern from "url-pattern";
+import { Server as NetServer } from "net";
+import { Server as HttpServer } from "http";
+import { Server as HttpsSever } from "https";
 
 import { IConfig } from "../../cli/interfaces";
+
+export type THttpxServer = NetServer & { http: HttpServer, https: HttpsSever }
 
 export interface IModuleTime {
   moduleTime: number

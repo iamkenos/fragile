@@ -6,7 +6,6 @@ import { CONFIG_OPTIONS, USAGE } from "./config";
 
 export async function start(): Promise<any> {
   try {
-    console.clear();
     let args = yargs.usage(USAGE.trim()).wrap(120);
     for (const opt of CONFIG_OPTIONS) {
       args = args.option(opt.name, opt as yargs.Options);

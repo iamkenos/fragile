@@ -74,6 +74,7 @@ export function createparsedConfig(sourceFile: string, overrides: any): IConfig 
     // final manipulation for webdriverio config properties
     const parsed = {
       ...config,
+      certsDir: resolvePath(configDir, config.certsDir),
       recordDir: resolvePath(configDir, config.recordDir),
       responsesDir: resolvePath(configDir, config.responsesDir),
       resourcesDir: resolvePath(configDir, config.resourcesDir)

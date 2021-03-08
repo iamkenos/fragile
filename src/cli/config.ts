@@ -5,6 +5,7 @@ export const DEFAULT: IConfig = {
   host: "0.0.0.0",
   port: 1080,
   cors: true,
+  certsDir: "./certs",
   delay: 0,
   etag: false,
   logLevel: DEFAULT_LEVEL,
@@ -74,7 +75,7 @@ const CONFIG_PROPERTIES: IConfigProperty[] = [
   },
   {
     name: "port",
-    helptext: "HTTP, HTTPS, SOCKS and HTTP CONNECT port for both mocking and proxying requests",
+    helptext: "HTTP and HTTPS port for both mocking and proxying requests",
     overrideOption: {
       enabled: true,
       alias: "p",
@@ -87,6 +88,10 @@ const CONFIG_PROPERTIES: IConfigProperty[] = [
       message: "Which port do you want to use for mocking and proxying requests?",
       default: DEFAULT.port
     }
+  },
+  {
+    name: "certsDir",
+    helptext: "Base directory of the SSL certs to be used for HTTPS protocol, relative to the config file"
   },
   {
     name: "cors",
@@ -138,20 +143,6 @@ const CONFIG_PROPERTIES: IConfigProperty[] = [
     helptext: "Object having a `limit` of rps allowed and the return `status` if the limit is reached"
   },
   {
-    name: "recordResponses",
-    helptext: "Whether to record the responses on a defined directory; Use with `recordDir`",
-    overrideOption: {
-      enabled: true,
-      alias: "rr",
-      type: "boolean",
-      description: "Record api responses and save with the expected response module format"
-    }
-  },
-  {
-    name: "recordDir",
-    helptext: "Base directory of the response data recordings, relative to the config file; Use with `recordResponses`"
-  },
-  {
     name: "responsesDir",
     helptext: "Base directory of the response data you want to mock, relative to the config file",
     inquiredOption: {
@@ -171,6 +162,38 @@ const CONFIG_PROPERTIES: IConfigProperty[] = [
       message: "Where would you like your static resources to be served from?",
       default: DEFAULT.resourcesDir,
       validate: answer => (answer.length === 0 ? "This property is required" : true)
+    }
+  },
+  {
+    name: "recordResponses",
+    helptext: "Whether to record the responses on a defined directory; Use with `recordDir`",
+    inquiredOption: {
+      enabled: true,
+      type: "confirm",
+      message: "Would you like to record the responses as respoonse modules?",
+      default: DEFAULT.recordResponses
+    },
+    overrideOption: {
+      enabled: true,
+      alias: "rr",
+      type: "boolean",
+      description: "Record api responses and save with the expected response module format"
+    }
+  },
+  {
+    name: "recordDir",
+    helptext: "Base directory of the response data recordings, relative to the config file",
+    inquiredOption: {
+      enabled: true,
+      type: "input",
+      message: "Where would you like your recorded responses to be saved?",
+      default: DEFAULT.recordDir,
+      when: (answers: IConfig): boolean => answers.recordResponses,
+      validate: (answer, answers: IConfig) => (
+        [answers.responsesDir, answers.resourcesDir].includes(answer)
+          ? "This cannot be the same as `responsesDir` or `resourcesDir`"
+          : answer.length === 0 ? "This property is required" : true
+      )
     }
   },
   {
