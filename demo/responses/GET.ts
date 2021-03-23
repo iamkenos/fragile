@@ -1,11 +1,9 @@
-import { IResponseModule } from "@iamkenos/fragile";
+import { IMockModule } from "@iamkenos/fragile";
 
-const fn: IResponseModule = () => {
+const fn: IMockModule = () => {
   return {
-    moduleOverrides: {
-      proxy: { target: "http://google.com.sg" }
-    },
-    moduleResponse: {
+    mockOverrides: { proxy: { target: "http://google.com.sg" } },
+    mockResponse: {
       status: 222,
       body: "hello world!"
     }

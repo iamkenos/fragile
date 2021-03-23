@@ -8,8 +8,8 @@ import { IConfig } from "../../cli/interfaces";
 
 export type THttpxServer = NetServer & { http: HttpServer, https: HttpsSever }
 
-export interface IModuleTime {
-  moduleTime: number
+export interface IMockTime {
+  _mockTime: number
 }
 
 export interface IModuleOverrides {
@@ -18,28 +18,28 @@ export interface IModuleOverrides {
   delay?: IConfig["delay"];
 }
 
-export interface IModuleResponse {
+export interface IMockResponse {
   status: number;
   headers?: { [key: string]: any };
   cookies?: { [key: string]: any };
   body: any;
 }
 
-export interface IModuleArgs {
+export interface IMockArgs {
   req?: Request;
-  res?: Response & Partial<IModuleMeta>;
+  res?: Response & Partial<IMockMeta>;
 }
 
-export interface IModuleReturn {
-  moduleOverrides?: IModuleOverrides;
-  moduleResponse: IModuleResponse
+export interface IMockReturn {
+  mockOverrides?: IModuleOverrides;
+  mockResponse: IMockResponse
 }
 
-export interface IModuleMeta extends IModuleReturn, IModuleTime {
-  moduleError: Error;
-  moduleFullPath: string;
-  modulePath: string;
-  moduleFallback?: { urlPattern: UrlPattern; wildcards: any; };
+export interface IMockMeta extends IMockReturn, IMockTime {
+  _mockErr: Error;
+  _mockFullPath: string;
+  _mockPath: string;
+  _mockFallback?: { urlPattern: UrlPattern; wildcards: any; };
 }
 
 export interface ILoggedMeta {
@@ -57,6 +57,6 @@ export interface ILoggedMeta {
   }
 }
 
-export interface IResponseModule {
-  ({}: IModuleArgs): IModuleReturn
+export interface IMockModule {
+  ({}: IMockArgs): IMockReturn
 }

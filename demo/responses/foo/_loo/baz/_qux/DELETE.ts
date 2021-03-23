@@ -1,10 +1,10 @@
-import { IResponseModule } from "@iamkenos/fragile";
+import { IMockModule } from "@iamkenos/fragile";
 
-const fn: IResponseModule = ({ res }) => {
+const fn: IMockModule = ({ res }) => {
   return {
-    moduleResponse: {
+    mockResponse: {
       status: 202,
-      body: res.moduleFallback.urlPattern
+      body: res._mockFallback.urlPattern
     }
   };
 };

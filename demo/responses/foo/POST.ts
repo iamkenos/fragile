@@ -1,10 +1,10 @@
-import { IResponseModule } from "@iamkenos/fragile";
+import { IMockModule } from "@iamkenos/fragile";
 import xml2js from "xml2js";
 
-const fn: IResponseModule = ({ req }) => {
+const fn: IMockModule = ({ req }) => {
   return {
-    moduleOverrides: { delay: { min: 200, max: 400 } },
-    moduleResponse: {
+    mockOverrides: { delay: { min: 200, max: 400 } },
+    mockResponse: {
       status: 202,
       body: req.body.data.type === "XML" ? new xml2js.Builder().buildObject(req.body) : req.body
     }

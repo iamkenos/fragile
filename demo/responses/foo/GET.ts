@@ -1,8 +1,8 @@
-import { IResponseModule } from "@iamkenos/fragile";
+import { IMockModule } from "@iamkenos/fragile";
 
-const fn: IResponseModule = () => {
+const fn: IMockModule = () => {
   return {
-    moduleResponse: {
+    mockResponse: {
       status: 200,
       body: {}
     }
