@@ -1,14 +1,19 @@
 <h1 align="center">FRAGILE</h1>
 
 <p align="center">
-  <a href="./docs/LINK_1.md">Link 1</a> |
-  <a href="./docs/LINK_2.md">Link 2</a> |
-  <a href="./docs/LINK_3.md">Link 3</a> |
+  <a href="./docs/DETAILED_GUIDE.md">Detailed Guide</a> |
+  <a href="./docs/RELEASES.md">Releases</a>
 </p>
 
 ---
 
 ## About
+
+A mocking framework powered by [Express](https://expressjs.com/) designed to serve mock HTTP/s responses.
+
+Key features:
+
+...
 
 ## Requirements
 
