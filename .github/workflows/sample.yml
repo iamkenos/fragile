@@ -1,0 +1,38 @@
+name: Sample
+
+on:
+  # pull_request:
+  #   branches:
+  #     - "develop"
+
+  workflow_dispatch:
+
+jobs:
+  dummy:
+    runs-on: ubuntu-latest
+    steps:
+      # - uses: actions/checkout@v2
+      - uses: rlespinasse/github-slug-action@v3.x
+      - id: get_pr
+        uses: jwalton/gh-find-current-pr@v1
+      # use pr if there's an open pr; branch name if no open pr, empty if it's on master
+      - name: Set allure reports directory
+        run: |
+          echo "ALLURE_DIR=$(
+            if ! [[ -z $REF_PR ]]; then echo $REF_PR; 
+            elif [ $REF_SLUG_URL != 'master' ]; then echo $REF_SLUG_URL
+            else echo ''; fi)" >> $GITHUB_ENV
+        env:
+          REF_PR: ${{ steps.get_pr.outputs.pr }}
+          REF_SLUG_URL: ${{ env.GITHUB_REF_SLUG_URL }}
+      - id: print_allure_dir
+        run: |
+          echo "ALLURE DIR ---- $ALLURE_DIR"
+      - name: Set commit status
+        run: |
+          ENDPOINT=$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA
+          curl \
+            -X POST \
+            -H 'Accept: application/vnd.github.v3+json' \
+            -d '{"state":"failure"}' \
+            "$ENDPOINT"
