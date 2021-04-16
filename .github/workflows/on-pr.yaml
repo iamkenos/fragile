@@ -1,0 +1,34 @@
+name: on pr
+
+on:
+  pull_request:
+    types: [opened]
+    branches:
+      - "develop"
+
+  issue_comment:
+    types: [created]
+
+jobs:
+  dummy:
+    runs-on: ubuntu-latest
+    steps:
+      # - uses: actions/checkout@v2
+      - name: PR Comment trigger
+        uses: Khan/pull-request-comment-trigger@1.0.0
+        id: check
+        with:
+          trigger: "#run-ui-tests"
+      - id: get_pr
+        uses: jwalton/gh-find-current-pr@v1
+      # use pr if there's an open pr; branch name if no open pr, empty if it's on master
+      - name: this should always run 1
+        run: echo "foobar 1"
+      - id: run only on comment 1
+        if: steps.check.outputs.triggered == 'true'
+        run: echo "goobaz 1"
+      - name: this should always run 2
+        run: echo "foobar 2"
+      - id: run only on comment 2
+        if: steps.check.outputs.triggered == 'true'
+        run: echo "goobaz 2"
