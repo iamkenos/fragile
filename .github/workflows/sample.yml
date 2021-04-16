@@ -1,7 +1,7 @@
 name: Sample
 
 on:
-  # pull_request:
+  # pull_request:a
   #   branches:
   #     - "develop"
 
@@ -11,7 +11,7 @@ jobs:
   dummy:
     runs-on: ubuntu-latest
     steps:
-      # - uses: actions/checkout@v2
+      # - uses: actions/checkout@v2zz
       - uses: rlespinasse/github-slug-action@v3.x
       - id: get_pr
         uses: jwalton/gh-find-current-pr@v1
