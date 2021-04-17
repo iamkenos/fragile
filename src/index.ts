@@ -1,9 +1,9 @@
 import { IConfig } from "./cli/interfaces";
-import { IMockModule } from "./core/interfaces";
 import logger from "./logger";
+
+export * from "./core/interfaces";
 
 export {
   logger,
-  IConfig,
-  IMockModule
+  IConfig
 };

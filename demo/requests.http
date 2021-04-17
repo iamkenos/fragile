@@ -1,55 +1,129 @@
+##############################################################################
+# Thank you for using this tool!
+# If you're using VSCode, start by installing the REST Client plugin: 
+# https://marketplace.visualstudio.com/items?itemName=humao.rest-client
+#
+# After installing, you should be able to send requests from this file and
+# see how the responses tie with the requests.
+#
+# Otherwise, you can also use other tools like Postman and build your requests
+# according to the samples provided below
+# 
+##############################################################################
+
 ###
+# basic http GET request
+# response file: ./responses/GET.ts
 GET http://localhost:1080
 
 ###
-PUT http://localhost:1080
+# basic https GET request
+# response file: ./responses/GET.ts
+# 
+# shows how https requests and port unification
+# are supported out of the box
+GET https://localhost:1080
 
 ###
-GET https://localhost:1080/foo
+# http HEAD request
+# response file: ./responses/foo/HEAD.ts
+# 
+# shows how the tool respects the actual request;
+# the mock response has property but the returned response doesn't,
+# since the request method is HEAD
+HEAD https://localhost:1080/foo
 
 ###
+# http POST request
+# response file: ./responses/foo/POST.ts
+# 
+# shows how delays can be added on request level
+# the response will never return faster than 200ms
+# and can vary between 200ms - 400ms delay
 POST http://localhost:1080/foo
 content-type: application/json
 
 {
   "data": {
-    "type": "JSON",
-    "meta": {}
+    "anything": [ "goes" ]
   }
 }
 
 ###
+# http POST request
+# response file: ./responses/foo/POST.ts
+# 
+# shows how you can send xml data and the framework
+# can parse and return the body as JSON. this response
+# will never return faster than 1000ms. open the
+# response file to see it in action
 POST http://localhost:1080/foo
 content-type: application/xml
 
 <data>
-  <type>JSON</type>
-  <meta>
+  <anything>
+    <show-as>JSON</show-as>
     <bar>bar-val</bar>
     <baz>
       <qux>69</qux>
       <qux>96</qux>
     </baz>
-  </meta>
+  </anything>
 </data>
 
 ###
+# http POST request
+# response file: ./responses/foo/POST.ts
+# 
+# shows how you can send xml data and the framework
+# can parse and return the body as XML. this response
+# will never return faster than 1000ms. open the
+# response file to see it in action
 POST http://localhost:1080/foo
 content-type: application/xml
 
 <data>
-  <type>XML</type>
-  <meta>
+  <anything>
+    <show-as>XML</show-as>
     <bar>bar-val</bar>
     <baz>
       <qux>69</qux>
       <qux>96</qux>
     </baz>
-  </meta>
+  </anything>
 </data>
 
 ###
-DELETE http://localhost:1080/foo/my.email@company.com/baz/wild card2
+# http PUT request
+# response file: ./responses/goo/_bar/baz/_qux/POST.ts
+# 
+# shows how you can use fallbacks and wildcards as part
+# of your request. Notice how the request doesn't 
+# have _bar and _qux  on the path
+PUT http://localhost:1080/goo/maybe-an-email@email.com/baz/orjustarandomstringhere123
+content-type: application/json
+
+{
+  "data": "this will be ignored"
+}
 
 ###
-PATCH http://localhost:1080/foo/my.email@company.com
+# http POST request
+# response file: ./responses/goo/_bar/POST.ts
+# 
+# shows how you can proxy a request
+POST http://localhost:1080/goo/anythinggoes
+content-type: application/json
+
+{
+  "email": "lipsum@foobar.com",
+  "password": "lipsum"
+}
+
+###
+# http DELETE request
+# response file: N/A
+# 
+# throws a response file not found error
+DELETE http://localhost:1080
+content-type: application/json

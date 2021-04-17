@@ -1,10 +1,12 @@
 import { IMockModule } from "@iamkenos/fragile";
 
 const fn: IMockModule = ({ res }) => {
+  const { mock } = res;
   return {
-    mockResponse: {
+    response: {
       status: 202,
-      body: res._mockFallback.urlPattern
+      // let's see what's in here
+      body: mock.fallback
     }
   };
 };

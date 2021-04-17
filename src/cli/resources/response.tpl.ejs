@@ -1,11 +1,11 @@
-import { IResponseModule } from "@iamkenos/fragile";
+import { IMockModule } from "@iamkenos/fragile";
 
-const fn: IResponseModule = () => {
+const fn: IMockModule = () => {
   return {
-    moduleResponse: {
-      status: <%= meta.statusCode %>,
-      headers: <%- JSON.stringify(meta.headers) %>,
-      body: <%- JSON.stringify(meta.body) %>
+    response: {
+      status: <%= response.status %>,
+      headers: <%- JSON.stringify(response.headers) %>,
+      body: <%- JSON.stringify(response.body) %>
     }
   };
 };
