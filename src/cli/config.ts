@@ -198,7 +198,7 @@ const CONFIG_PROPERTIES: IConfigProperty[] = [
   },
   {
     name: "urlPatternOpts",
-    helptext: "Options to use when matching url patterns"
+    helptext: "Options to use when matching url patterns; See https://www.npmjs.com/package/url-pattern"
   }
 ];
 

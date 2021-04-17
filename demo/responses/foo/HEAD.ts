@@ -2,9 +2,14 @@ import { IMockModule } from "@iamkenos/fragile";
 
 const fn: IMockModule = () => {
   return {
-    mockResponse: {
+    response: {
       status: 200,
-      body: {}
+      headers: {
+        lea: "seydoux"
+      },
+      body: {
+        says: "I'm Fragile, But Not That Fragile."
+      }
     }
   };
 };
