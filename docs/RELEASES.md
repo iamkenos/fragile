@@ -6,6 +6,12 @@
 
 _Note: Gaps between patch versions are faulty, broken or test releases._
 
+## 0.1.2
+
+`2021-04-18`
+
+- [3024289](https://github.com//iamkenos/fragile/commit/3024289) fix: various bug fixes [[iamkenos](https://github.com/iamkenos)]
+
 ## 0.1.1
 
 `2021-04-18`
