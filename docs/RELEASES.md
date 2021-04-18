@@ -6,6 +6,12 @@
 
 _Note: Gaps between patch versions are faulty, broken or test releases._
 
+## 0.1.3
+
+`2021-04-18`
+
+- [f90f568](https://github.com//iamkenos/fragile/commit/f90f568) docs: update guide [[iamkenos](https://github.com/iamkenos)]
+
 ## 0.1.2
 
 `2021-04-18`
