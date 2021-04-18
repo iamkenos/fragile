@@ -24,4 +24,3 @@ _Note: Gaps between patch versions are faulty, broken or test releases._
 - [9567ce1](https://github.com//iamkenos/fragile/commit/9567ce1) refactor: only show logger caller file on trace level [[iamkenos](https://github.com/iamkenos)]
 - [3a00da8](https://github.com//iamkenos/fragile/commit/3a00da8) feat: logger middleware and fallback paths [[iamkenos](https://github.com/iamkenos)]
 - [6449aee](https://github.com//iamkenos/fragile/commit/6449aee) initial commit [[iamkenos](https://github.com/iamkenos)]
-

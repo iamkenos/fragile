@@ -36,3 +36,13 @@ export function isModuleExisting(path: string): boolean {
     return false;
   }
 }
+
+export function isJSON(str: string): boolean {
+  if (typeof str !== "string") return false;
+  try {
+    const result = JSON.parse(str);
+    return result instanceof Object || result instanceof Array;
+  } catch (e) {
+    return false;
+  }
+}

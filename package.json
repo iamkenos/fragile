@@ -28,7 +28,7 @@
     "postbuild:mv:samples": "shx mv ./build/cli/resources/demo ./build/cli/resources/samples",
     "postbuild:mv:tsconfig": "shx mv ./build/cli/resources/tsconfig.tpl.ejs ./build/cli/resources/tsconfig.json",
     "postbuild:rm:clutter": "rimraf ./build/cli/**/{recordings,certs}",
-    "demo:serve": "./bin/fragile.js demo/demo.conf.ts",
+    "demo:serve": "./bin/fragile.js demo/fragile.conf.ts",
     "pack": "npm run build && npm pack",
     "lint": "eslint ./",
     "test": "run-s test:**",

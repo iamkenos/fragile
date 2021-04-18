@@ -5,7 +5,7 @@ const fn: IMockModule = () => {
     response: {
       status: <%= response.status %>,
       headers: <%- JSON.stringify(response.headers) %>,
-      body: <%- JSON.stringify(response.body) %>
+      body: <%- response.body %>
     }
   };
 };
