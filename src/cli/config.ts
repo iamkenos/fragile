@@ -220,7 +220,7 @@ export const USAGE = `
 Usage:
   fragile init                        Launches the configuration helper
   fragile samples                     Generate sample files to get started with
-  fragile [file]                      Launches the stub server
+  fragile [file]                      Launches the mock server
   fragile [file] [options]            Stdin overrides for certain config properties; See options list below
 
 Complete list of properties:
