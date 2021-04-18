@@ -3,6 +3,7 @@ import * as prettier from "prettier";
 import * as fs from "fs-extra";
 import * as path from "path";
 import { NextFunction, Request } from "express";
+import { ClientRequest } from "http";
 import { createProxyMiddleware as proxyRequest } from "http-proxy-middleware";
 import limit, { RateLimit } from "express-rate-limit";
 import merge from "lodash.merge";
@@ -11,7 +12,7 @@ import UrlPattern from "url-pattern";
 import { IConfig } from "../../cli/interfaces";
 import { inspect, readFileSync, resolveFiles } from "../../cli/utils";
 import { CLI_DIR, PRETTIER_SETTINGS_FILE, RESPONSE_MODULE_TPL_FILE } from "../../cli/config";
-import { getDirsNested, getNearestParentDir, isModuleExisting, randIntBetween, slashify } from "../utils";
+import { getDirsNested, getNearestParentDir, isJSON, isModuleExisting, randIntBetween, slashify } from "../utils";
 import { ResponseModuleNotFoundError, ResponseModuleRequiredPropertyNotFoundError } from "../../exceptions";
 import { IMock, IMockExecd, IMockFallback, IMockModule } from "../interfaces";
 import logger from "../../logger";
@@ -93,6 +94,8 @@ export class MockServer {
           logger.warn("Defaulting to first match: %s", shortPath);
         }
       } else {
+        mock._fullPath = fullPath;
+        mock._shortPath = shortPath;
         throw new ResponseModuleNotFoundError(shortPath);
       }
     }
@@ -119,8 +122,9 @@ export class MockServer {
   private recordAsMockResponse(req: Request, res: IMockExecd): void {
     try {
       const { mock } = res;
-      const response = { status: res.statusCode, headers: res.getHeaders(), body: mock._chunk };
-      const outputFile = path.join(this.config.recordDir, mock._shortPath + ".ts");
+      const body = isJSON(mock._chunk) ? mock._chunk : JSON.stringify(mock._chunk, null, 2);
+      const response = { status: res.statusCode, headers: res.getHeaders(), body: body };
+      const outputFile = path.join(this.config.recordDir, escape(mock._shortPath) + ".ts");
       const fmt = readFileSync(path.join(__dirname, "../../", CLI_DIR, PRETTIER_SETTINGS_FILE));
       const renderedFmt = { ...JSON.parse(fmt), parser: "babel" };
 
@@ -174,29 +178,29 @@ export class MockServer {
     res: IMockExecd,
     next: NextFunction): void {
     const { mock } = res;
-    const end = res.end;
-    const parseJSON = (str: string) => {
-      try {
-        return JSON.parse(str);
-      } catch (error) {
-        return undefined;
-      }
-    };
-    const parseChunk = (chunk: string, isjson: boolean) => {
-      const chunkStr = chunk && chunk.toString();
-      if (isjson) return (parseJSON(chunk) || chunkStr); else return chunkStr;
-    };
+    // i don't understand most of what's going on below ¯\_(ツ)_/¯
+    // it's mostly a mishmash of these answers:
+    // https://stackoverflow.com/a/58882269/2285470
+    // https://stackoverflow.com/a/50161321/2285470
+    // https://stackoverflow.com/a/34712950/2285470
+    const [write, end] = [res.write, res.end];
+    const chunks: Buffer[] = [];
     req._time = +new Date();
     mock._chunk = "";
 
-    // @ts-ignore
-    res.end = (chunk: any, encoding: BufferEncoding) => {
-      res.end = end;
-      mock._time = +new Date() - req._time;
-      if (chunk) {
-        const isJSON = ((res.getHeader("content-type") as string)?.indexOf("json") >= 0);
-        mock._chunk = parseChunk(chunk.toString(), isJSON);
+    // override
+    res.write = (...args: any[]) => {
+      chunks.push(Buffer.from(args[0]));
+      return write.apply(res, args);
+    };
+
+    // override
+    res.end = (...args: any[]) => {
+      if (args[0]) {
+        chunks.push(Buffer.from(args[0]));
       }
+      mock._chunk = Buffer.concat(chunks).toString("utf8");
+      mock._time = +new Date() - req._time;
 
       const data = {
         request: {
@@ -207,7 +211,7 @@ export class MockServer {
           body: req.body
         },
         response: {
-          statusCode: res.statusCode,
+          status: res.statusCode,
           headers: res.getHeaders(),
           body: mock._chunk
         }
@@ -215,22 +219,37 @@ export class MockServer {
 
       this.config.recordResponses && this.recordAsMockResponse(req, res);
       logger.debug("%s %s %sms \n%s", req.method, req.path, mock._time, JSON.stringify(data, null, 2));
-      res.end(chunk, encoding);
+      end.apply(res, args);
     };
     next();
   }
 
   public useProxyMiddleware(req: Request, res: IMockExecd, next: NextFunction): void {
     const { overrides, response } = res.mock;
+    // this needs to be here because of how proxy middleware
+    // complains when body parser is called first
+    // see:
+    // - https://github.com/chimurai/http-proxy-middleware/issues/320
+    // - https://github.com/chimurai/http-proxy-middleware/issues/40#issuecomment-249430255
+    const restream = function(proxyReq: ClientRequest, req: Request) {
+      if (req.body) {
+        const body = JSON.stringify(req.body);
+        // incase if content-type is application/x-www-form-urlencoded -> we need to change to application/json
+        proxyReq.setHeader("Content-Type", "application/json");
+        proxyReq.setHeader("Content-Length", Buffer.byteLength(body));
+        // stream the content
+        proxyReq.write(body);
+      }
+    };
 
     if (response && overrides.proxy.target) {
       logger.info("Forwarding request to response override target: %s", overrides.proxy.target);
       logger.debug("Proxy options: %s", inspect(overrides.proxy));
-      proxyRequest(req.path, overrides.proxy)(req, res, next);
+      proxyRequest(req.path, { ...overrides.proxy, onProxyReq: restream })(req, res, next);
     } else if (!response && this.config.proxy.target) {
       logger.info("Forwarding request to global target: %s", this.config.proxy.target);
       logger.debug("Proxy options: %s", inspect(this.config.proxy));
-      proxyRequest(req.path, this.config.proxy)(req, res, next);
+      proxyRequest(req.path, { ...this.config.proxy, onProxyReq: restream })(req, res, next);
     } else {
       next();
     }
