@@ -1,7 +1,7 @@
 const fn = ({ req }) => {
   return {
     overrides: {
-      rate: { limit: 2 }
+      rate: { limit: 4 }
     },
     response: {
       status: 201,

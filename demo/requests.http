@@ -151,4 +151,4 @@ DELETE http://localhost:1080
 # response file: N/A
 # 
 # throws a response file not found error
-DELETE http://localhost:1080/some@email.com/123
+DELETE http://localhost:1080/goo/some@email.com/baz/123
