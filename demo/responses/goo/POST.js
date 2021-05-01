@@ -6,7 +6,7 @@ const fn = ({ req }) => {
     response: {
       status: 201,
       headers: { "Content-Type": "application/json" },
-      body: req.body
+      body: { ...req.body, ...req.cookies }
     }
   };
 };

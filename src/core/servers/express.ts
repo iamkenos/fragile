@@ -1,5 +1,6 @@
 import bp from "body-parser";
 import bpx from "body-parser-xml";
+import cp from "cookie-parser";
 import crs from "cors";
 import express, { Express } from "express";
 
@@ -34,12 +35,20 @@ export class ExpressServer {
   private loadMiddleware(): void {
     const { resourcesDir, cors } = this.config;
     // cors
-    if (cors) { ExpressServer.server.use(crs()); }
+    if (cors) {
+      ExpressServer.server.use(crs({
+        credentials: true,
+        origin: true,
+        exposedHeaders: "*"
+      }));
+    }
     // enable json request body parsing
     ExpressServer.server.use(bp.json());
     ExpressServer.server.use(bp.urlencoded({ extended: true }));
     // enable xml request body parsing
     ExpressServer.server.use(bp.xml({ xmlParseOptions: { explicitArray: false } }));
+    // enable cookie parsing; this allows access to req.cookies
+    ExpressServer.server.use(cp());
     // enable static files
     ExpressServer.server.use(express.static(resourcesDir));
   }
