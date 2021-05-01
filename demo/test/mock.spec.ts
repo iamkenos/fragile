@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import got from "got";
 
-describe("express mock server", () => {
+describe("mock server", () => {
   const baseUrl = "http://localhost:1080";
   const baseUrlHttps = "https://localhost:1080";
   const jsonHeader = { "content-type": "application/json" };
@@ -197,7 +197,7 @@ describe("express mock server", () => {
     expect(response.body).toEqual(expectedBody);
   });
 
-  it("/goo/anythinggoes/POST: should proxy requests and return", async() => {
+  it("/goo/_bar/POST: should proxy requests and return", async() => {
     const response = await got.post(baseUrl + "/goo/anythinggoes", {
       headers: jsonHeader,
       json: {
