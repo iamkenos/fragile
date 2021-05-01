@@ -6,6 +6,13 @@
 
 _Note: Gaps between patch versions are faulty, broken or test releases._
 
+## 0.1.4
+
+`2021-05-01`
+
+- [739bf98](https://github.com//iamkenos/fragile/commit/739bf98) test: ut placeholder and demo tests [[iamkenos](https://github.com/iamkenos)]
+- [fbb5d84](https://github.com//iamkenos/fragile/commit/fbb5d84) feat: cors and cookie parser [[iamkenos](https://github.com/iamkenos)]
+
 ## 0.1.3
 
 `2021-04-18`
