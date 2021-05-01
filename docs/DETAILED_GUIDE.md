@@ -10,7 +10,7 @@
 2. [Creating mocks](#creating-mocks)
 3. [Configurations](#configurations)
 
-For simplicity, all the examples shown below will be the same ones you get from running the `whistle` command.
+For simplicity, all the examples shown below will be the same ones you get from running the `samples` command.
 
 ## CLI tool
 
@@ -59,7 +59,7 @@ Options:
   - `$ npx fragile init`
   - launches an inquirer prompt that generates a default configuration file `fragile.conf.ts` based on the answers provided; the file will be on the same directory as where the command is executed
 
-- `whistle`:
+- `samples`:
 
   - `$ npx fragile samples`
   - generates sample files to get you started with; the files will be generated inside on a `samples` directory, relative to where the command is executed
@@ -137,7 +137,7 @@ Certain configuration properties can be overriden from the command line by passi
 
 For instance, to start the server with recording enabled and set the logging level to debug:
 
-`fragile fragile.conf.ts --rr --l debug`
+`npx fragile fragile.conf.ts --rr --l debug`
 
 | Key             | Alias | Description                                                            |
 | --------------- | ----- | ---------------------------------------------------------------------- |
