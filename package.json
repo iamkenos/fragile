@@ -30,11 +30,11 @@
     "postbuild:rm:clutter": "rimraf ./build/cli/**/{recordings,certs,test}",
     "demo:serve": "./bin/fragile.js demo/fragile.conf.ts",
     "demo:serve:silent": "npm run demo:serve -- --l silent",
-    "demo:test": "jest --config demo/test/.jestrc.json || exit 0",
+    "demo:test": "jest --config demo/test/.jestrc.js || exit 0",
     "pack": "npm run build && npm pack",
     "lint": "eslint ./",
     "test": "run-s test:**",
-    "test:unit": "jest --config .jestrc.json --coverage",
+    "test:unit": "jest --config .jestrc.js --coverage",
     "test:demo": "start-test demo:serve:silent 1080 demo:test",
     "release": "npm run build && node ./.scripts/s_release.js",
     "prepare": "husky install && npm run build"

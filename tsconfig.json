@@ -8,13 +8,13 @@
     "outDir": "build",
     "module": "commonjs",
     "moduleResolution": "node",
-    "paths": { "@iamkenos/fragile": ["build/index"] },
+    "paths": { "@iamkenos/fragile": ["build/index"], "@src/*": ["src/*"] },
     "removeComments": false,
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "ES5",
     "types": ["node", "@types/jest"]
   },
-  "include": ["./src/**/*.ts", "./demo/**/*.ts"],
-  "exclude": ["node_modules", "build", "test", "bin"]
+  "include": ["./src/**/*.ts", "./demo/**/*.ts", "test"],
+  "exclude": ["node_modules", "build", "bin"]
 }
