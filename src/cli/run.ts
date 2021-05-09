@@ -4,7 +4,7 @@ import { Arguments } from "yargs";
 
 import logger from "../logger";
 import { CONFIG_OPTIONS } from "./config";
-import { createLocalConfig, createparsedConfig } from "./commands/init";
+import { createLocalConfig, createParsedConfig } from "./commands/init";
 import { generateSamples } from "./commands/samples";
 import { inspect } from "./utils";
 require("@babel/register")({ presets: ["@babel/preset-env"] });
@@ -41,7 +41,7 @@ export default (args: Arguments<any>): any => {
   // if the provided config file exists
   // then parse the contents
   if (existsSync(localConfigFile)) {
-    return createparsedConfig(firstArg, overrides);
+    return createParsedConfig(firstArg, overrides);
   }
 
   // if the provided config file doesn't exist
