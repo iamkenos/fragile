@@ -1,6 +1,6 @@
 {
   "name": "@iamkenos/fragile",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "license": "MIT",
   "author": "iamkenos",
   "description": "A mocking framework powered by Express, designed to serve mock HTTP/s responses.",
