@@ -1,6 +1,0 @@
-
-describe("core", () => {
-  it("should...", () => {
-
-  });
-});
