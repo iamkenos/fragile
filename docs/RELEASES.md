@@ -6,6 +6,27 @@
 
 _Note: Gaps between patch versions are faulty, broken or test releases._
 
+## 0.1.5
+
+`2021-05-09`
+
+- [a9cfcd4](https://github.com//iamkenos/fragile/commit/a9cfcd4) chore: update release script [[iamkenos](https://github.com/iamkenos)]
+- [10c240f](https://github.com//iamkenos/fragile/commit/10c240f) test(core): run core [[iamkenos](https://github.com/iamkenos)]
+- [693b0ae](https://github.com//iamkenos/fragile/commit/693b0ae) test(core): servers and snapshots [[iamkenos](https://github.com/iamkenos)]
+- [1cdbef9](https://github.com//iamkenos/fragile/commit/1cdbef9) test(api): fragile api [[iamkenos](https://github.com/iamkenos)]
+- [11a2339](https://github.com//iamkenos/fragile/commit/11a2339) test(core): utils [[iamkenos](https://github.com/iamkenos)]
+- [ff0ec3b](https://github.com//iamkenos/fragile/commit/ff0ec3b) test(exceptions): exceptions snapshots [[iamkenos](https://github.com/iamkenos)]
+- [c440e7e](https://github.com//iamkenos/fragile/commit/c440e7e) test(cli): start [[iamkenos](https://github.com/iamkenos)]
+- [908a200](https://github.com//iamkenos/fragile/commit/908a200) test(cli): run [[iamkenos](https://github.com/iamkenos)]
+- [742446d](https://github.com//iamkenos/fragile/commit/742446d) test(cli): resources snapshots [[iamkenos](https://github.com/iamkenos)]
+- [a18d8e4](https://github.com//iamkenos/fragile/commit/a18d8e4) test(cli): samples command [[iamkenos](https://github.com/iamkenos)]
+- [30763cc](https://github.com//iamkenos/fragile/commit/30763cc) test(cli): config snapshots [[iamkenos](https://github.com/iamkenos)]
+- [b3f501f](https://github.com//iamkenos/fragile/commit/b3f501f) test(cli): utils and init command [[iamkenos](https://github.com/iamkenos)]
+- [2867051](https://github.com//iamkenos/fragile/commit/2867051) test(logger): logger UTs [[iamkenos](https://github.com/iamkenos)]
+- [3ea8740](https://github.com//iamkenos/fragile/commit/3ea8740) chore: update commit message convention [[iamkenos](https://github.com/iamkenos)]
+- [ef2e15e](https://github.com//iamkenos/fragile/commit/ef2e15e) chore: add vscode extensions file [[iamkenos](https://github.com/iamkenos)]
+- [084c4f0](https://github.com//iamkenos/fragile/commit/084c4f0) test: rename demo tests [[iamkenos](https://github.com/iamkenos)]
+
 ## 0.1.4
 
 `2021-05-01`
