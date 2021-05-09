@@ -7,10 +7,10 @@ module.exports = {
   coverageDirectory: '<rootDir>/test/.coverage',
   coverageThreshold: {
     global: {
-      branches: 85,
-      functions: 85,
-      lines: 85,
-      statements: 85
+      branches: 40,
+      functions: 70,
+      lines: 70,
+      statements: 70
     }
   },
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),

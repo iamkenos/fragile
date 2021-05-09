@@ -1,6 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`core/servers/httpx should have a mock server singleton 1`] = `
+exports[`core/servers/mock should expose a logger middleware 1`] = `[Function]`;
+
+exports[`core/servers/mock should expose a proxy middleware 1`] = `[Function]`;
+
+exports[`core/servers/mock should expose a rate limit middleware 1`] = `rateLimit {}`;
+
+exports[`core/servers/mock should expose a router middleware 1`] = `[Function]`;
+
+exports[`core/servers/mock should expose a send middleware 1`] = `[Function]`;
+
+exports[`core/servers/mock should have a mock server singleton 1`] = `
 MockServer {
   "SUPPORTED_RESPONSE_TYPES": Array [
     "/**/*.{ts,js}",
