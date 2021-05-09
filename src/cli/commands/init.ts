@@ -57,7 +57,7 @@ export async function createLocalConfig(): Promise<any> {
   }
 }
 
-export function createparsedConfig(sourceFile: string, overrides: any): IConfig {
+export function createParsedConfig(sourceFile: string, overrides: any): IConfig {
   try {
     const configFile = path.join(process.cwd(), sourceFile);
     const configDir = path.dirname(configFile);
