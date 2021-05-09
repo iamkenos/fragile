@@ -36,7 +36,8 @@
     "test": "run-s test:**",
     "test:unit": "jest --config .jestrc.js --coverage",
     "test:demo": "start-test demo:serve:silent 1080 demo:test",
-    "release": "npm run build && node ./.scripts/s_release.js",
+    "prerelease": "npm run build && npm test",
+    "release": "node ./.scripts/s_release.js",
     "prepare": "husky install && npm run build"
   },
   "dependencies": {
