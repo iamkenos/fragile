@@ -41,7 +41,7 @@ export function isJSON(str: string): boolean {
   if (typeof str !== "string") return false;
   try {
     const result = JSON.parse(str);
-    return result instanceof Object || result instanceof Array;
+    return result instanceof Array || result instanceof Object;
   } catch (e) {
     return false;
   }

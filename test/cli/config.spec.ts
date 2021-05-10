@@ -70,6 +70,78 @@ describe("cli/config", () => {
     expect(SAMPLES_HELPER_TS_CONFIG_EXISTS_MESSAGE).toMatchSnapshot();
   });
 
+  it("should error when user doesn't provide a valid responsesDir value", () => {
+    const responsesDir: any = CONFIG_INQUIRY.find(i => i.name === "responsesDir");
+    expect(responsesDir.validate("")).toEqual("This property is required");
+  });
+
+  it("should not error when user provides a valid responsesDir value", () => {
+    const responsesDir: any = CONFIG_INQUIRY.find(i => i.name === "responsesDir");
+    expect(responsesDir.validate("foobar")).toEqual(true);
+  });
+
+  it("should error when user doesn't provide a valid resourcesDir value", () => {
+    const resourcesDir: any = CONFIG_INQUIRY.find(i => i.name === "resourcesDir");
+    expect(resourcesDir.validate("")).toEqual("This property is required");
+  });
+
+  it("should not error when user provides a valid resourcesDir value", () => {
+    const resourcesDir: any = CONFIG_INQUIRY.find(i => i.name === "resourcesDir");
+    expect(resourcesDir.validate("foobar")).toEqual(true);
+  });
+
+  it("should ask for a recordDir value when recordResponses is true", () => {
+    const answers = {
+      recordResponses: true
+    };
+    const recordDir: any = CONFIG_INQUIRY.find(i => i.name === "recordDir");
+    expect(recordDir.when(answers)).toEqual(true);
+  });
+
+  it("should not ask for a recordDir value when recordResponses is false", () => {
+    const answers = {
+      recordResponses: false
+    };
+    const recordDir: any = CONFIG_INQUIRY.find(i => i.name === "recordDir");
+    expect(recordDir.when(answers)).toEqual(false);
+  });
+
+  it("should error when user doesn't provide a valid recordDir value", () => {
+    const answers = {
+      responsesDir: "foobar",
+      resourcesDir: "goobaz"
+    };
+    const recordDir: any = CONFIG_INQUIRY.find(i => i.name === "recordDir");
+    expect(recordDir.validate("", answers)).toEqual("This property is required");
+  });
+
+  it("should error when user provides recordDir with the same value as responsesDir value", () => {
+    const answers = {
+      responsesDir: "foobar",
+      resourcesDir: "goobaz"
+    };
+    const recordDir: any = CONFIG_INQUIRY.find(i => i.name === "recordDir");
+    expect(recordDir.validate("foobar", answers)).toEqual("This cannot be the same as `responsesDir` or `resourcesDir`");
+  });
+
+  it("should error when user provides recordDir with the same value as resourcesDir value", () => {
+    const answers = {
+      responsesDir: "foobar",
+      resourcesDir: "goobaz"
+    };
+    const recordDir: any = CONFIG_INQUIRY.find(i => i.name === "recordDir");
+    expect(recordDir.validate("goobaz", answers)).toEqual("This cannot be the same as `responsesDir` or `resourcesDir`");
+  });
+
+  it("should not error when user provides a valid recordDir value", () => {
+    const answers = {
+      responsesDir: "foobar",
+      resourcesDir: "goobaz"
+    };
+    const recordDir: any = CONFIG_INQUIRY.find(i => i.name === "recordDir");
+    expect(recordDir.validate("foobaz", answers)).toEqual(true);
+  });
+
   it("should expose the cli options", () => {
     expect(CONFIG_OPTIONS).toMatchSnapshot();
   });

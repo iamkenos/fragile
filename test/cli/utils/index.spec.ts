@@ -39,6 +39,12 @@ describe("cli/utils", () => {
     expect((path.resolve as any as jest.Mock)).toHaveBeenCalledWith("foobar", "goobaz");
   });
 
+  it("should expose a utility resolvePath function: without filePath", () => {
+    const result = resolvePath("foobar");
+    expect((path.resolve as any as jest.Mock)).not.toHaveBeenCalled();
+    expect(result).toEqual("");
+  });
+
   it("should expose a utility resolveFiles function: valid glob, strict mode", () => {
     const resolved = jest.requireActual("path").resolve(path.join(process.cwd(), "test/cli/utils/*.ts"));
     (path.resolve as any as jest.Mock).mockReturnValue(resolved);

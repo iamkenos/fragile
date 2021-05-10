@@ -80,4 +80,18 @@ describe("cli/run", () => {
     run(args);
     expect(createLocalConfig as any as jest.Mock).toHaveBeenCalledTimes(1);
   });
+
+  it("should not start the config helper when the provided local config file is existing", () => {
+    (existsSync as any as jest.Mock)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true);
+    const args = {
+      argv: {
+        _: ["foobar"],
+        logLevel: "trace"
+      }
+    };
+    run(args);
+    expect(createLocalConfig as any as jest.Mock).not.toHaveBeenCalled();
+  });
 });

@@ -50,6 +50,7 @@ describe("core/utils", () => {
   string             | expected
   ${"foobar"}        | ${false} 
   ${"[\"foobar\"]"}  | ${true} 
+  ${"{}"}            | ${true} 
   ${"{\"foo\":1}"}   | ${true} 
   ${123}             | ${false} 
   ${{ foo: "bar" }}  | ${false} 
