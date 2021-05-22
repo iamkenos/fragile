@@ -10,6 +10,20 @@ describe("mock server", () => {
   const formUrlEncodedHeader = { "content-type": "application/x-www-form-urlencoded" };
   const format = (body) => JSON.stringify(body, null, 2);
 
+  it.each([
+    { method: "GET", path: "/" },
+    { method: "PUT", path: "/goo/bar/baz/qux" }
+  ])("/*: should expose the config object and execute pre and post hooks: %o", async(arg) => {
+    const response = await got(baseUrl + arg.path, {
+      method: arg.method as any,
+      headers: { cookie: "_do=true" }
+    });
+    const expectedStatus = 202;
+
+    expect(response.statusCode).toEqual(expectedStatus);
+    expect(Object.keys(JSON.parse(response.body)).length).toEqual(16);
+  });
+
   it("/GET: should allow http requests and return", async() => {
     const response = await got(baseUrl);
     const expectedStatus = 200;

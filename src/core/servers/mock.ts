@@ -14,12 +14,12 @@ import { inspect, readFileSync, resolveFiles } from "../../cli/utils";
 import { CLI_DIR, PRETTIER_SETTINGS_FILE, RESPONSE_MODULE_TPL_FILE } from "../../cli/config";
 import { getDirsNested, getNearestParentDir, isJSON, isModuleExisting, randIntBetween, slashify } from "../utils";
 import { ResponseModuleNotFoundError, ResponseModuleRequiredPropertyNotFoundError } from "../../exceptions";
-import { IMock, IMockExecd, IMockFallback, IMockModule } from "../interfaces";
+import { IMock, IMockExecd, IMockFallback, IMockModule, TMockHook } from "../interfaces";
 import logger from "../../logger";
 
 export class MockServer {
   private static instance: MockServer;
-  private config: IConfig
+  private config: IConfig;
   private SUPPORTED_RESPONSE_TYPES = ["/**/*.{ts,js}"];
 
   private constructor(config: IConfig) {
@@ -100,15 +100,35 @@ export class MockServer {
       }
     }
 
+    mock._config = this.config;
     mock._fullPath = fullPath;
     mock._shortPath = shortPath;
     mock.module = require(fullPath).default as IMockModule;
     logger.info("Response: %s", shortPath);
   }
 
+  private execPreResponseHook(req: Request, res: IMock) {
+    try {
+      const { preResponseHook } = this.config;
+      isModuleExisting(preResponseHook) && (require(preResponseHook).default as TMockHook)({ req: req, res: res });
+    } catch (error) {
+      logger.error("Error executing pre-response hook: %s", error);
+    }
+  }
+
+  private execPostResponseHook(req: Request, res: IMock) {
+    try {
+      const { postResponseHook } = this.config;
+      isModuleExisting(postResponseHook) && (require(postResponseHook).default as TMockHook)({ req: req, res: res });
+    } catch (error) {
+      logger.error("Error executing post-response hook: %s", error);
+    }
+  }
+
   private execMockResponse(req: Request, res: IMock): void {
     const { mock }: IMockExecd = res as any;
     const { delay, proxy, rate } = this.config;
+
     const { overrides, response } = mock.module({ req: req, res: res });
     const computedDelay = (d: IConfig["delay"]) => typeof d === "number" ? d : randIntBetween(d.min, d.max);
 
@@ -148,7 +168,9 @@ export class MockServer {
       logger.info("Request: %s %s", req.method, req.path);
       (res as any).mock = {};
       this.assignMockResponse(req, res);
+      this.execPreResponseHook(req, res);
       this.execMockResponse(req, res);
+      this.execPostResponseHook(req, res);
     } catch (error) {
       res.mock._err = error;
     }

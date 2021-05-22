@@ -44,6 +44,10 @@ export interface IConfig {
   logLevel: LogLevelDesc;
   /** Object having a `limit` of rps allowed and the return `status` if the limit is reached */
   rate: { status?: number, limit?: number }
+  /** File path, relative to the config file that exports a default function; Runs before each response and follows the response module signature */
+  preResponseHook: string;
+  /** File path, relative to the config file that exports a default function; Runs after each response and follows the response module signature */
+  postResponseHook: string;
   /** Object specifying the http proxy options; See https://www.npmjs.com/package/http-proxy-middleware */
   proxy: ProxyOptions;
   /** Whether to record the responses on a defined directory; Use with `recordDir` */

@@ -72,12 +72,14 @@ export function createParsedConfig(sourceFile: string, overrides: any): IConfig 
     logger.setLevel(config.logLevel);
 
     // final manipulation for webdriverio config properties
-    const parsed = {
+    const parsed: IConfig = {
       ...config,
       certsDir: resolvePath(configDir, config.certsDir),
       recordDir: resolvePath(configDir, config.recordDir),
       responsesDir: resolvePath(configDir, config.responsesDir),
-      resourcesDir: resolvePath(configDir, config.resourcesDir)
+      resourcesDir: resolvePath(configDir, config.resourcesDir),
+      preResponseHook: resolvePath(configDir, config.preResponseHook),
+      postResponseHook: resolvePath(configDir, config.postResponseHook)
     };
 
     logger.debug("Raw config:\n%s", inspect(config));

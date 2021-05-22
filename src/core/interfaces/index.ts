@@ -9,9 +9,13 @@ import { IConfig } from "../../cli/interfaces";
 
 export type THttpxServer = NetServer & { http: HttpServer, https: HttpsSever }
 
+export type TMockHook = ({}: IMockArgs) => void
+
 export interface IMock extends Response {
   /** all accessible metadata that the mock response exposes */
   mock: {
+    /** the config object used */
+    _config: IConfig,
     /** errors encountered while processing the mock */
     _err: Error,
     /** the module's fullpath */

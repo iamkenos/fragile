@@ -53,7 +53,8 @@ describe("cli/commands/init", () => {
   it.each([
     { delay: 0, recordResponses: false },
     { delay: { min: 6, max: 9 }, recordResponses: false },
-    { delay: 0, recordResponses: true }
+    { delay: 0, recordResponses: true },
+    { preResponseHook: "foo/bar", postResponseHook: "foo/baz" }
   ])("should allow creating a local config file: %o", async(ans) => {
     (inquirer.prompt as any as jest.Mock).mockResolvedValue({ ...args, ...ans });
     (fs.existsSync as any as jest.Mock).mockReturnValue(true);
@@ -85,7 +86,8 @@ describe("cli/commands/init", () => {
   it.each([
     { logLevel: "error" },
     { host: "localhost", logLevel: "foobar" },
-    { port: 6969, recordResponses: "true" }
+    { port: 6969, recordResponses: "true" },
+    { preResponseHook: "foo/bar", postResponseHook: "foo/baz" }
   ])("should allow parsing of the local config file: %o", async(overrides) => {
     (inquirer.prompt as any as jest.Mock).mockResolvedValue(args);
     await createLocalConfig();
@@ -94,7 +96,9 @@ describe("cli/commands/init", () => {
       certsDir: expect.any(String),
       recordDir: expect.any(String),
       resourcesDir: expect.any(String),
-      responsesDir: expect.any(String)
+      responsesDir: expect.any(String),
+      preResponseHook: expect.any(String),
+      postResponseHook: expect.any(String)
     });
     expect(parsed.certsDir).toEqual(path.join(process.cwd(), DEFAULT.certsDir));
     expect(parsed.recordDir).toEqual(path.join(process.cwd(), args.recordDir));

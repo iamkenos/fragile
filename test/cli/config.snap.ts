@@ -26,6 +26,8 @@ Object {
   "host": "0.0.0.0",
   "logLevel": "info",
   "port": 1080,
+  "postResponseHook": "",
+  "preResponseHook": "",
   "proxy": Object {
     "changeOrigin": true,
     "logLevel": "silent",
@@ -205,6 +207,8 @@ Complete list of properties:
   * delay	  Time in ms, or an object having the \`mix\` and \`max\` delay before returning a response
   etag	  Whether to enable the use of ETag
   * logLevel	  The level of logging verbosity
+  preResponseHook	  File path, relative to the config file that exports a default function; Runs before each response
+  postResponseHook	  File path, relative to the config file that exports a default function; Runs after each response
   proxy	  Object specifying the http proxy options; See https://www.npmjs.com/package/http-proxy-middleware
   rate	  Object having a \`limit\` of rps allowed and the return \`status\` if the limit is reached
   * responsesDir	  Base directory of the response data you want to mock, relative to the config file

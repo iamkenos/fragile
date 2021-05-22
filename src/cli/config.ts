@@ -9,6 +9,8 @@ export const DEFAULT: IConfig = {
   delay: 0,
   etag: false,
   logLevel: DEFAULT_LEVEL,
+  preResponseHook: "",
+  postResponseHook: "",
   proxy: { target: "", changeOrigin: true, logLevel: "silent" },
   rate: { limit: 0, status: 429 },
   recordResponses: false,
@@ -133,6 +135,14 @@ const CONFIG_PROPERTIES: IConfigProperty[] = [
       choices: LEVELS,
       default: DEFAULT.logLevel
     }
+  },
+  {
+    name: "preResponseHook",
+    helptext: "File path, relative to the config file that exports a default function; Runs before each response"
+  },
+  {
+    name: "postResponseHook",
+    helptext: "File path, relative to the config file that exports a default function; Runs after each response"
   },
   {
     name: "proxy",
