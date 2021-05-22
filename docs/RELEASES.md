@@ -6,6 +6,15 @@
 
 _Note: Gaps between patch versions are faulty, broken or test releases._
 
+## 0.2.0
+
+`2021-05-22`
+
+- [d5ea77d](https://github.com//iamkenos/fragile/commit/d5ea77d) feat: pre and post request hooks [[iamkenos](https://github.com/iamkenos)]
+- [2bbf3cb](https://github.com//iamkenos/fragile/commit/2bbf3cb) deps: dependency housekeeping [[iamkenos](https://github.com/iamkenos)]
+- [7af564c](https://github.com//iamkenos/fragile/commit/7af564c) test: more UT updates [[iamkenos](https://github.com/iamkenos)]
+- [1b206da](https://github.com//iamkenos/fragile/commit/1b206da) deps: audit fixes [[iamkenos](https://github.com/iamkenos)]
+
 ## 0.1.5
 
 `2021-05-09`
