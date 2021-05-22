@@ -23,6 +23,8 @@ MockServer {
     "host": "0.0.0.0",
     "logLevel": "info",
     "port": 1080,
+    "postResponseHook": "",
+    "preResponseHook": "",
     "proxy": Object {
       "changeOrigin": true,
       "logLevel": "silent",
