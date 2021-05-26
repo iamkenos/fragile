@@ -161,3 +161,22 @@ DELETE http://localhost:1080
 # 
 # throws a response file not found error
 DELETE http://localhost:1080/goo/some@email.com/baz/123
+
+###
+# http POST request
+# response file: ./responses/goo/_bar/baz/POST.ts
+# 
+# shows how you can parse multipart form data requests
+POST http://localhost:1080/goo/formdata/baz
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="foobar"
+
+some fancy text here
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="goobaz"; filename="qux"
+Content-Type: application/json
+
+{"data":{"anything": [ "goes" ]}}
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

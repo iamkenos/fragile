@@ -76,3 +76,12 @@ export interface IMockResponse {
   cookies?: { [key: string]: any };
   body: any;
 }
+
+export type TFile = {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  buffer: any;
+  size: number;
+}
