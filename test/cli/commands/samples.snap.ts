@@ -11,7 +11,7 @@ Consider adding the following:",
   \\"compilerOptions\\": {
     \\"baseUrl\\": \\"./\\",
     \\"module\\": \\"commonjs\\",
-    \\"types\\": [\\"node\\"]
+    \\"types\\": [\\"node\\", \\"@types/multer\\"]
   }
 }
 ",

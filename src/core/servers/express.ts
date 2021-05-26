@@ -3,6 +3,7 @@ import bpx from "body-parser-xml";
 import cp from "cookie-parser";
 import crs from "cors";
 import express, { Express } from "express";
+import multer from "multer";
 
 import { IConfig } from "../../cli/interfaces";
 import logger from "../../logger";
@@ -45,6 +46,8 @@ export class ExpressServer {
     // enable json request body parsing
     ExpressServer.server.use(bp.json());
     ExpressServer.server.use(bp.urlencoded({ extended: true }));
+    // enable multipart formdata parsing
+    ExpressServer.server.use(multer().any());
     // enable xml request body parsing
     ExpressServer.server.use(bp.xml({ xmlParseOptions: { explicitArray: false } }));
     // enable cookie parsing; this allows access to req.cookies

@@ -31,7 +31,7 @@ exports[`cli/resources should expose a ts config template file 1`] = `
   \\"compilerOptions\\": {
     \\"baseUrl\\": \\"./\\",
     \\"module\\": \\"commonjs\\",
-    \\"types\\": [\\"node\\"]
+    \\"types\\": [\\"node\\", \\"@types/multer\\"]
   }
 }
 "
