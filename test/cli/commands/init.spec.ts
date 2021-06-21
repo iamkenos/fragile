@@ -6,10 +6,12 @@ import { createLocalConfig, createParsedConfig } from "@src/cli/commands/init";
 import { CONFIG_LOCAL_OUT_FILE, CONFIG_LOCAL_TPL_FILE, DEFAULT } from "@src/cli/config";
 
 jest.mock("@src/cli/utils", () => ({
+  // @ts-ignore
   ...jest.requireActual("@src/cli/utils"),
   readFileSync: jest.fn()
 }));
 jest.mock("fs-extra", () => ({
+  // @ts-ignore
   ...jest.requireActual("fs-extra"),
   existsSync: jest.fn(),
   unlinkSync: jest.fn()

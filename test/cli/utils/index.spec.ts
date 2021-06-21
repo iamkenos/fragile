@@ -6,6 +6,7 @@ import { inspect, readFileSync, resolveFiles, resolvePath } from "@src/cli/utils
 jest.mock("fs");
 jest.mock("glob");
 jest.mock("path", () => ({
+  // @ts-ignore
   ...jest.requireActual("path"),
   resolve: jest.fn()
 }));

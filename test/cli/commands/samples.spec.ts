@@ -13,6 +13,7 @@ jest.mock("@src/cli/utils", () => ({
 }));
 
 jest.mock("fs-extra", () => ({
+  // @ts-ignore
   ...jest.requireActual("fs-extra"),
   existsSync: jest.fn(),
   copySync: jest.fn()

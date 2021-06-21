@@ -6,6 +6,7 @@ import { generateSamples } from "@src/cli/commands/samples";
 jest.mock("@src/cli/commands/init");
 jest.mock("@src/cli/commands/samples");
 jest.mock("fs", () => ({
+  // @ts-ignore
   ...jest.requireActual("fs"),
   existsSync: jest.fn()
 }));
