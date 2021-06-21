@@ -6,6 +6,13 @@
 
 _Note: Gaps between patch versions are faulty, broken or test releases._
 
+## 0.2.1
+
+`2021-06-21`
+
+- [9213c03](https://github.com//iamkenos/fragile/commit/9213c03) deps: dependency housekeeping and audit fixes [[iamkenos](https://github.com/iamkenos)]
+- [e7fb2f6](https://github.com//iamkenos/fragile/commit/e7fb2f6) feat: parse multipart form data [[iamkenos](https://github.com/iamkenos)]
+
 ## 0.2.0
 
 `2021-05-22`
