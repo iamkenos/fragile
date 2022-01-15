@@ -64,7 +64,7 @@
     "loglevel-plugin-prefix": "0.8.4",
     "multer": "1.4.3",
     "prettier": "2.3.2",
-    "shelljs": "0.8.4",
+    "shelljs": "0.8.5",
     "slash": "3.0.0",
     "ts-node": "10.2.0",
     "tsconfig-paths": "3.10.1",
